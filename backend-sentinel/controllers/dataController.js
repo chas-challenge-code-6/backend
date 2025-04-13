@@ -1,8 +1,8 @@
-const { SensorData } = require('../models');
-const { Op } = require('sequelize');
+import { SensorData } from '../models/index.js';
+import { Op, fn, col } from 'sequelize';
 
 // POST /api/data
-exports.createData = async (req, res) => {
+const createData = async (req, res) => {
   try {
     const { device_id, timestamp, sensors } = req.body;
     const data = await SensorData.create({
@@ -26,10 +26,10 @@ exports.createData = async (req, res) => {
 };
 
 // GET /api/data/latest
-exports.getLatestData = async (req, res) => {
+const getLatestData = async (req, res) => {
   try {
     const latest = await SensorData.findAll({
-      attributes: ['device_id', [Sequelize.fn('MAX', Sequelize.col('timestamp')), 'latest_time']],
+      attributes: ['device_id', [fn('MAX', col('timestamp')), 'latest_time']],
       group: ['device_id']
     });
     res.json(latest);
@@ -39,7 +39,7 @@ exports.getLatestData = async (req, res) => {
 };
 
 // GET /api/data/:device_id
-exports.getDeviceData = async (req, res) => {
+const getDeviceData = async (req, res) => {
   const { device_id } = req.params;
   const { start, end } = req.query;
 
@@ -60,7 +60,7 @@ exports.getDeviceData = async (req, res) => {
 };
 
 // GET /api/alerts
-exports.getAlerts = async (req, res) => {
+const getAlerts = async (req, res) => {
   try {
     const alerts = await SensorData.findAll({
       where: {
@@ -77,4 +77,11 @@ exports.getAlerts = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+export default {
+  createData,
+  getLatestData,
+  getDeviceData,
+  getAlerts
 };
