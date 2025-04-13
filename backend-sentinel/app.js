@@ -1,29 +1,35 @@
 import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import indexRouter from './routes/index.js';
+import usersRouter from './routes/users.js';
+import dataRoutes from './routes/data.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
 const app = express();
-const PORT = process.env.PORT || 8765;
+const PORT = process.env.PORT || 8766;
+
+// För att kunna använda __dirname i ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Middleware
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Routers
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/api', dataRoutes);
+
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-// const express = require('express');
-// const path = require('path');
-// const cookieParser = require('cookie-parser');
-// const logger = require('morgan');
-
-// const indexRouter = require('./routes/index');
-// const usersRouter = require('./routes/users');
-
-// app.use(logger('dev'));
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: false }));
-// app.use(cookieParser());
-// app.use(express.static(path.join(__dirname, 'public')));
-
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
-
-// const dataRoutes = require('./routes/data');
-// app.use('/api', dataRoutes);
-
-
-module.exports = app;
+export default app;
