@@ -5,6 +5,7 @@ import { Op, fn, col } from 'sequelize';
 const createData = async (req, res) => {
   try {
     const { device_id, timestamp, sensors } = req.body;
+
     const data = await SensorData.create({
       device_id,
       timestamp,
@@ -19,9 +20,22 @@ const createData = async (req, res) => {
       noise_level: sensors.noise_level,
       battery: sensors.battery
     });
-    res.status(201).json(data);
+
+    // 201 Created is used when a new resource is successfully created.
+    // It's typically returned after a successful POST request that creates a resource.
+    res.status(201).json({
+      status: 'success',
+      code: 201,
+      message: 'Sensor data created successfully',
+      data
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      status: 'error',
+      code: 500,
+      message: 'Internal Server Error',
+      error: err.message
+    });
   }
 };
 
@@ -32,9 +46,19 @@ const getLatestData = async (req, res) => {
       attributes: ['device_id', [fn('MAX', col('timestamp')), 'latest_time']],
       group: ['device_id']
     });
-    res.json(latest);
+
+    res.status(200).json({
+      status: 'success',
+      code: 200,
+      data: latest
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      status: 'error',
+      code: 500,
+      message: 'Internal Server Error',
+      error: err.message
+    });
   }
 };
 
@@ -53,9 +77,19 @@ const getDeviceData = async (req, res) => {
       },
       order: [['timestamp', 'DESC']]
     });
-    res.json(data);
+
+    res.status(200).json({
+      status: 'success',
+      code: 200,
+      data
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      status: 'error',
+      code: 500,
+      message: 'Internal Server Error',
+      error: err.message
+    });
   }
 };
 
@@ -68,14 +102,24 @@ const getAlerts = async (req, res) => {
           { co2: { [Op.gt]: 1000 } },
           { co: { [Op.gt]: 50 } },
           { noise_level: { [Op.gt]: 100 } },
-          { acceleration_z: { [Op.lt]: 3.0 } } // fall detection
+          { acceleration_z: { [Op.lt]: 3.0 } }
         ]
       },
       order: [['timestamp', 'DESC']]
     });
-    res.json(alerts);
+
+    res.status(200).json({
+      status: 'success',
+      code: 200,
+      data: alerts
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      status: 'error',
+      code: 500,
+      message: 'Internal Server Error',
+      error: err.message
+    });
   }
 };
 
