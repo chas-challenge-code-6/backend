@@ -1,17 +1,18 @@
+// app.js
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import indexRouter from './routes/index.js';
-import usersRouter from './routes/users.js';
-import dataRoutes from './routes/data.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-const app = express();
-const PORT = process.env.PORT || 8766;
+// Routes
+import indexRouter from './routes/index.js';
+import usersRouter from './routes/users.js';
+import dataRoutes from './routes/data.js';
+import statsRoutes from './routes/stats.js';
 
-// För att kunna använda __dirname i ES Modules
+const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -22,14 +23,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routers
+// Route handlers
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/api', dataRoutes);
+app.use('/api/data', dataRoutes); // Now clearly separated
+app.use('/api/stats', statsRoutes); // ✅ Now also under /api
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Optional: 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found' });
 });
 
 export default app;
