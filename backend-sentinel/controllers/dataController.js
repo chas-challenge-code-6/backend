@@ -17,7 +17,7 @@ const createData = async (req, res) => {
       acceleration_z: sensors.acceleration.z,
       heart_rate: sensors.heart_rate,
       noise_level: sensors.noise_level,
-      battery: sensors.battery
+      battery: sensors.battery,
     });
     res.status(201).json(data);
   } catch (err) {
@@ -30,7 +30,7 @@ const getLatestData = async (req, res) => {
   try {
     const latest = await SensorData.findAll({
       attributes: ['device_id', [fn('MAX', col('timestamp')), 'latest_time']],
-      group: ['device_id']
+      group: ['device_id'],
     });
     res.json(latest);
   } catch (err) {
@@ -48,10 +48,10 @@ const getDeviceData = async (req, res) => {
       where: {
         device_id,
         timestamp: {
-          [Op.between]: [start, end]
-        }
+          [Op.between]: [start, end],
+        },
       },
-      order: [['timestamp', 'DESC']]
+      order: [['timestamp', 'DESC']],
     });
     res.json(data);
   } catch (err) {
@@ -68,10 +68,10 @@ const getAlerts = async (req, res) => {
           { co2: { [Op.gt]: 1000 } },
           { co: { [Op.gt]: 50 } },
           { noise_level: { [Op.gt]: 100 } },
-          { acceleration_z: { [Op.lt]: 3.0 } } // fall detection
-        ]
+          { acceleration_z: { [Op.lt]: 3.0 } }, // fall detection
+        ],
       },
-      order: [['timestamp', 'DESC']]
+      order: [['timestamp', 'DESC']],
     });
     res.json(alerts);
   } catch (err) {
@@ -83,5 +83,5 @@ export default {
   createData,
   getLatestData,
   getDeviceData,
-  getAlerts
+  getAlerts,
 };

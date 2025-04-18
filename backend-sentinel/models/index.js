@@ -61,9 +61,8 @@ const loadModels = async () => {
     db[model.name] = model;
   }
 
-  /* Gamla koden 
+  /* Gamla koden   // 🔗 Associations
   
-  // 🔗 Associations
 for (const modelName of Object.keys(db)) {
   if (db[modelName].associate) {
     db[modelName].associate(db);
