@@ -23,32 +23,65 @@ let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize(
+    config.database,
+    config.username,
+    config.password,
+    config
+  );
 }
 
 // 🚀 Ladda in modeller dynamiskt
+
+// (gamla versionen??)
+/*
 const modelFiles = fs.readdirSync(__dirname).filter(file =>
   file.indexOf('.') !== 0 &&
   file !== basename &&
   file.slice(-3) === '.js' &&
   file.indexOf('.test.js') === -1
-);
+); 
+*/
 
-for (const file of modelFiles) {
-  const { default: modelDef } = await import(`./${file}`);
-  const model = modelDef(sequelize, Sequelize.DataTypes);
-  db[model.name] = model;
-}
+// 🚀 Ladda in modeller dynamiskt i en asynkron funktion
+const loadModels = async () => {
+  const modelFiles = fs
+    .readdirSync(__dirname)
+    .filter(
+      (file) =>
+        file.indexOf('.') !== 0 &&
+        file !== basename &&
+        file.slice(-3) === '.js' &&
+        file.indexOf('.test.js') === -1
+    );
 
-// 🔗 Associations
+  for (const file of modelFiles) {
+    const { default: modelDef } = await import(`./${file}`);
+    const model = modelDef(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  }
+
+  /* Gamla koden 
+  
+  // 🔗 Associations
 for (const modelName of Object.keys(db)) {
   if (db[modelName].associate) {
     db[modelName].associate(db);
+
+  */
+
+  // 🔗 Associations
+  for (const modelName of Object.keys(db)) {
+    if (db[modelName].associate) {
+      db[modelName].associate(db);
+    }
   }
-}
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+  db.sequelize = sequelize;
+  db.Sequelize = Sequelize;
 
-export default db;
+  return db;
+};
+
+export default loadModels;
 export const { SensorData } = db;

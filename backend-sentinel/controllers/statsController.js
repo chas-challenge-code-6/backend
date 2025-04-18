@@ -1,4 +1,3 @@
-// controllers/statsController.js
 import { SensorData } from '../models/index.js';
 import { fn, col } from 'sequelize';
 
