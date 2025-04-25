@@ -26,6 +26,15 @@ export const loginUser = async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-  const token = jwt.sign({ username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+
   res.json({ token });
 };
+export const getMe = (req, res) => {
+    // Assuming you're only storing username in the token
+    const { username } = req.user;
+  
+    // Optionally, return more info if you store it
+    res.json({ username });
+  };
+  
