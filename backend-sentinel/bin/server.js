@@ -1,6 +1,10 @@
 import app from '../app.js';
 import http from 'http';
 import debugLib from 'debug';
+import dotenv from 'dotenv';
+
+
+dotenv.config();
 
 // Skapa en debug-instans
 const debug = debugLib('backend-sentinel:server');
