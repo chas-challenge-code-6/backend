@@ -13,7 +13,6 @@ import cors from 'cors';
 
 dotenv.config();
 
-
 const app = express();
 const PORT = process.env.PORT || 8766;
 
@@ -34,7 +33,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api', dataRoutes);
 app.use('/auth', authRoutes);
-app.use('/data', dataRoutes);
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
