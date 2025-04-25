@@ -3,7 +3,6 @@ import http from 'http';
 import debugLib from 'debug';
 import dotenv from 'dotenv';
 
-
 dotenv.config();
 
 // Skapa en debug-instans
@@ -33,9 +32,7 @@ function normalizePort(val) {
 function onError(error) {
   if (error.syscall !== 'listen') throw error;
 
-  const bind = typeof PORT === 'string'
-    ? 'Pipe ' + PORT
-    : 'Port ' + PORT;
+  const bind = typeof PORT === 'string' ? 'Pipe ' + PORT : 'Port ' + PORT;
 
   switch (error.code) {
     case 'EACCES':
@@ -51,9 +48,7 @@ function onError(error) {
 
 function onListening() {
   const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? `pipe ${addr}`
-    : `port ${addr.port}`;
+  const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
   debug(`Listening on ${bind}`);
   console.log(`🚀 Servern körs på http://localhost:${PORT}`);
 }
