@@ -1,7 +1,6 @@
 // Middleware to validate incoming sensor data payload
 // Ensures all required fields are present and timestamp is in valid ISO 8601 format
 
-
 const validateSensorData = (req, res, next) => {
   const { device_id, timestamp, sensors } = req.body;
 
@@ -29,7 +28,11 @@ const validateSensorData = (req, res, next) => {
       sensors.acceleration.y === undefined ||
       sensors.acceleration.z === undefined
     ) {
-      missingFields.push('sensors.acceleration.x', 'sensors.acceleration.y', 'sensors.acceleration.z');
+      missingFields.push(
+        'sensors.acceleration.x',
+        'sensors.acceleration.y',
+        'sensors.acceleration.z'
+      );
     }
 
     // Check remaining sensor fields
