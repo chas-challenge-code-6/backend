@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // adjust this path if needed
+import sequelize from '../config/database.js'; // Import Sequelize instance
 
 const SensorData = sequelize.define(
   'SensorData',
@@ -34,4 +34,4 @@ const SensorData = sequelize.define(
   }
 );
 
-export { SensorData }; // ✅ Named export
+export { SensorData };

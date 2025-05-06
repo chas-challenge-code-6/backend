@@ -2,6 +2,7 @@ import app from '../app.js';
 import http from 'http';
 import debugLib from 'debug';
 import dotenv from 'dotenv';
+import sequelize from '../config/database.js';
 
 dotenv.config();
 
@@ -15,10 +16,19 @@ app.set('port', PORT);
 // Skapa HTTP-server
 const server = http.createServer(app);
 
-// Starta server
-server.listen(PORT);
-server.on('error', onError);
-server.on('listening', onListening);
+// Sync Sequelize models with the database
+sequelize
+  .sync({ alter: true }) // Use { force: true } if you want to drop and recreate tables
+  .then(() => {
+    // Starta server
+    server.listen(PORT);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  })
+  .catch((error) => {
+    console.error('Error syncing database:', error);
+    process.exit(1); // Exit if sync fails
+  });
 
 // === Hjälpfunktioner ===
 
