@@ -43,4 +43,5 @@ for (const modelName of Object.keys(db)) {
   }
 }
 
+export { SensorData };
 export default db;

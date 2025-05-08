@@ -25,14 +25,14 @@ const createData = async (req, res) => {
       status: 'success',
       code: 201,
       message: 'Sensor data created successfully',
-      data
+      data,
     });
   } catch (err) {
     res.status(500).json({
       status: 'error',
       code: 500,
       message: 'Internal Server Error',
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -48,14 +48,14 @@ const getLatestData = async (req, res) => {
     res.status(200).json({
       status: 'success',
       code: 200,
-      data: latest
+      data: latest,
     });
   } catch (err) {
     res.status(500).json({
       status: 'error',
       code: 500,
       message: 'Internal Server Error',
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -79,14 +79,14 @@ const getDeviceData = async (req, res) => {
     res.status(200).json({
       status: 'success',
       code: 200,
-      data
+      data,
     });
   } catch (err) {
     res.status(500).json({
       status: 'error',
       code: 500,
       message: 'Internal Server Error',
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -109,14 +109,14 @@ const getAlerts = async (req, res) => {
     res.status(200).json({
       status: 'success',
       code: 200,
-      data: alerts
+      data: alerts,
     });
   } catch (err) {
     res.status(500).json({
       status: 'error',
       code: 500,
       message: 'Internal Server Error',
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -155,6 +155,8 @@ const deleteById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export { SensorData };
 
 export default {
   createData,
