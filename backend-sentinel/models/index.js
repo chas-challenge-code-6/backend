@@ -9,11 +9,11 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 const basename = path.basename(__filename);
 
 const db = {};
 
+// 🔌 Connect to DB
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -21,11 +21,11 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
-    logging: false, // valfritt: stäng av SQL-utskrift i terminalen
+    logging: false
   }
 );
 
-// 🚀 Ladda in modeller dynamiskt
+// 🚀 Load models dynamically
 const modelFiles = fs.readdirSync(__dirname).filter(file =>
   file.indexOf('.') !== 0 &&
   file !== basename &&
@@ -39,7 +39,7 @@ for (const file of modelFiles) {
   db[model.name] = model;
 }
 
-// 🔗 Associations
+// 🔗 Define associations if any
 for (const modelName of Object.keys(db)) {
   if (db[modelName].associate) {
     db[modelName].associate(db);
@@ -48,6 +48,9 @@ for (const modelName of Object.keys(db)) {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+// 🔄 Auto-sync models to DB (adds missing columns)
+await sequelize.sync({ alter: true }); // <- This line enables live schema sync
 
 export default db;
 export const { SensorData } = db;
