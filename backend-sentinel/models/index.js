@@ -1,30 +1,29 @@
 import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
-import process from 'process';
+import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-
-// 🛠 Läs in config.json manuellt (utan assert)
-const configJson = JSON.parse(
-  fs.readFileSync(new URL('../config/config.json', import.meta.url), 'utf-8')
-);
-const config = configJson[env];
 
 const db = {};
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+    logging: false, // valfritt: stäng av SQL-utskrift i terminalen
+  }
+);
 
 // 🚀 Ladda in modeller dynamiskt
 const modelFiles = fs.readdirSync(__dirname).filter(file =>
