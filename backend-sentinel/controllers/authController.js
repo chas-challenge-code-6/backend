@@ -29,7 +29,6 @@ export const registerUser = async (req, res) => {
   }
 };
 
-//hejhej
 
 // POST /auth/login
 export const loginUser = async (req, res) => {
