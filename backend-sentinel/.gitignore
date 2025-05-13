@@ -15,3 +15,4 @@ npm-debug.log*
 # IDE settings
 .vscode/
 .idea/
+.env # om inte redan där
