@@ -13,7 +13,9 @@ export const registerUser = async (req, res) => {
   try {
     const userExists = await User.findOne({ where: { username } });
     if (userExists) {
-      return res.status(400).json({ status: 'error', message: 'User already exists' });
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'User already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -22,13 +24,12 @@ export const registerUser = async (req, res) => {
     res.status(201).json({
       status: 'success',
       message: 'User registered successfully',
-      user: { username }
+      user: { username },
     });
   } catch (err) {
     res.status(500).json({ status: 'error', error: err.message });
   }
 };
-
 
 // POST /auth/login
 export const loginUser = async (req, res) => {
@@ -37,17 +38,32 @@ export const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ where: { username } });
     if (!user) {
-      return res.status(400).json({ status: 'error', message: 'Invalid credentials' });
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ status: 'error', message: 'Invalid credentials' });
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    res.json({ status: 'success', token });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      maxAge: 60 * 60 * 1000,
+    });
+
+    res.json({ status: 'success', message: 'Login successful' });
   } catch (err) {
     res.status(500).json({ status: 'error', error: err.message });
   }
@@ -57,7 +73,7 @@ export const loginUser = async (req, res) => {
 export const getMe = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: { exclude: ['password'] }
+      attributes: { exclude: ['password'] },
     });
 
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -113,10 +129,11 @@ export const forgotPassword = async (req, res) => {
 
   try {
     const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(404).json({ message: 'No user with that email' });
+    if (!user)
+      return res.status(404).json({ message: 'No user with that email' });
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, {
-      expiresIn: process.env.RESET_PASSWORD_EXPIRES_IN || '15m'
+      expiresIn: process.env.RESET_PASSWORD_EXPIRES_IN || '15m',
     });
 
     await sendResetEmail(user.email, token);
