@@ -22,6 +22,7 @@ const getStatsSummary = async (req, res) => {
         [fn('AVG', col('heart_rate')), 'avg_heart_rate'],
         [fn('AVG', col('noise_level')), 'avg_noise'],
         [fn('AVG', col('battery')), 'avg_battery'],
+        [fn('AVG', col('pedometer')), 'avg_pedometer'],
       ],
     });
 
