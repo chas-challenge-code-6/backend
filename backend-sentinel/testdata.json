@@ -1,0 +1,15 @@
+{
+  "device_id": "sensor_001",
+  "timestamp": "2025-05-16T12:00:00Z",
+  "sensors": {
+    "temperature": 22.5,
+    "humidity": 55,
+    "gas": { "ppm": 1100 },
+    "fall_detected": false,
+    "heart_rate": 70,
+    "noise_level": 50,
+    "steps": 123,
+    "device_battery": 85,
+    "watch_battery": 65
+  }
+}
