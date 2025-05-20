@@ -217,3 +217,44 @@ To run the backend locally:
 ### Do not commit your `.env` file to Git!
 
 Use `.env.example` in version control, and share `.env` securely with your team.
+
+```
+project-Structure/
+│
+├── backend/
+│   ├── bin/
+│   │   └── server.js              # Server startup script
+│   ├── config/
+│   │   ├── config.cjs             # Application configuration
+│   │   └── database.js            # Database connection settings
+│   ├── controllers/
+│   │   ├── authController.js      # Authentication-related logic
+│   │   ├── dataController.js      # Data processing logic
+│   │   └── statsController.js     # Statistics processing logic
+│   ├── middlewares/
+│   │   ├── authenticateToken.js   # Token authentication middleware
+│   │   └── validateSensorData.js  # Sensor data validation middleware
+│   ├── models/
+│   │   ├── index.js               # Entry point for models
+│   │   └── sensorData.js          # Sensor data model
+│   ├── public/
+│   │   ├── stylesheets/           # CSS stylesheets
+│   │   └── index.html             # Static HTML file
+│   ├── routes/
+│   │   ├── auth.js                # Authentication API routes
+│   │   ├── data.js                # Data API routes
+│   │   ├── index.js               # Main API routes
+│   │   ├── stats.js              
+│   │   └── users.js               # User-related API routes
+│   ├── .env.example               # Sample environment variables file
+│   ├── app.js                    # Main Express application file
+│   ├── package.json              # Project dependencies
+│   └── package-lock.json
+│
+├── node_modules/                 # Installed node modules (auto-generated)
+├── .gitignore                   # Git ignore rules
+├── README.md                    # Project documentation
+└── package.json                 # Root-level package dependencies (if any)
+
+
+```

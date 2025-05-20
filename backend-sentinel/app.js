@@ -10,15 +10,20 @@ import { dirname } from 'path';
 import authRoutes from './routes/auth.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import statsRoutes from './routes/stats.js';  
 
+ 
 dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 8766;
 
+
 // För att kunna använda __dirname i ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
 
 // Middleware
 app.use(logger('dev'));
@@ -28,15 +33,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
+
 // Routers
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api', dataRoutes);
 app.use('/auth', authRoutes);
+app.use('/stats', statsRoutes);
+
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+
 export default app;
+
+
+
