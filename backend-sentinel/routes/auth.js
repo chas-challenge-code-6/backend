@@ -9,18 +9,20 @@ import {
   resetPassword
 } from '../controllers/authController.js';
 
-import { authenticateToken } from '../middlewares/authenticateToken.js';
+import {  authenticateToken } from '../middlewares/authenticateToken.js';
 
 const router = express.Router();
 
 // Auth
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 // User profile
 router.get('/me', authenticateToken, getMe);
-router.patch('/me', authenticateToken, updateMe);
-router.delete('/me', authenticateToken, deleteMe);
+router.patch('/me',  authenticateToken, updateMe);
+router.delete('/me',  authenticateToken, deleteMe);
 
 // Password reset
 router.post('/forgot-password', forgotPassword);
