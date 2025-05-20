@@ -62,3 +62,4 @@ function onListening() {
   debug(`Listening on ${bind}`);
   console.log(`🚀 Servern körs på http://localhost:${PORT}`);
 }
+
