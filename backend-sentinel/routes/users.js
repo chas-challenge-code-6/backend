@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+
 
 /* GET users listing. */
 router.get('/', (req, res, next) => {
@@ -13,6 +14,6 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-module.exports = mongoose.model('User', userSchema);
+export const User = mongoose.model('User', userSchema);
 
 export default router;

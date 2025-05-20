@@ -9,7 +9,7 @@ import {
   resetPassword
 } from '../controllers/authController.js';
 
-import { protect } from '../middlewares/authenticateToken.js';
+import {  authenticateToken } from '../middlewares/authenticateToken.js';
 
 const router = express.Router();
 
@@ -20,9 +20,9 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 
 // User profile
-router.get('/me', protect, getMe);
-router.patch('/me', protect, updateMe);
-router.delete('/me', protect, deleteMe);
+router.get('/me', authenticateToken, getMe);
+router.patch('/me',  authenticateToken, updateMe);
+router.delete('/me',  authenticateToken, deleteMe);
 
 // Password reset
 router.post('/forgot-password', forgotPassword);
