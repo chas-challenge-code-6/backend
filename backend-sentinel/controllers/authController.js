@@ -56,11 +56,15 @@ export const loginUser = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      maxAge: 60 * 60 * 1000,
+    // res.json({ status: 'success', message: 'Login successful' });
+    res.json({
+      status: 'success',
+      message: 'Login successful',
+      token, //skicka token till frontend!
+      user: {
+        id: user.id,
+        username: user.username,
+      },
     });
 
     res.json({ status: 'success', message: 'Login successful' });

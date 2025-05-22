@@ -17,21 +17,24 @@ const db = {};
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
-  process.env.DB_PASS,
+  process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
-    logging: false
+    logging: false,
   }
 );
 
 // 🚀 Load models dynamically
-const modelFiles = fs.readdirSync(__dirname).filter(file =>
-  file.indexOf('.') !== 0 &&
-  file !== basename &&
-  file.slice(-3) === '.js' &&
-  file.indexOf('.test.js') === -1
-);
+const modelFiles = fs
+  .readdirSync(__dirname)
+  .filter(
+    (file) =>
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
+  );
 
 for (const file of modelFiles) {
   const { default: modelDef } = await import(`./${file}`);
