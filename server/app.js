@@ -42,11 +42,12 @@ app.use('/auth', authRoutes);
 app.use('/stats', statsRoutes);
 
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-
+// Only start the server if not running in a serverless environment
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+}
 
 export default app;
 
