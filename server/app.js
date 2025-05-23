@@ -41,6 +41,9 @@ app.use('/api', dataRoutes);
 app.use('/auth', authRoutes);
 app.use('/stats', statsRoutes);
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 
 // Only start the server if not running in a serverless environment
 if (process.env.VERCEL !== '1') {
