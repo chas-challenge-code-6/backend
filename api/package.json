@@ -2,8 +2,7 @@
   "scripts": {
     "start": "node ./bin/server.js",
     "dev": "nodemon ./bin/server.js",
-    "build": "next build",
-    "vercel-build": "sentinel-express-project",
+    "build": "echo No build needed",
     "db:create": "sequelize-cli db:create --config config/config.cjs",
     "db:migrate": "sequelize-cli db:migrate --config config/config.cjs"
   },
