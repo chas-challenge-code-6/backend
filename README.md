@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # backend
 Backend
 
@@ -37,7 +36,6 @@ Backend
              |                                      |
       [ Web Frontend ]                       [ Mobile App ]
          (React)                             (React Native)
-=======
 # Project Sentinel – API Documentation
 
 ## Overview
