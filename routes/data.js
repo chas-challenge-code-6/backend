@@ -5,18 +5,21 @@ import { authenticateToken } from '../middlewares/authenticateToken.js';
 
 const router = express.Router();
 
+router.get('/api', (req, res) => {
+  res.send('Hello from API');
+});
 router.post('/data', validateSensorData, dataController.createData);
 router.get('/data/latest', dataController.getLatestData);
 router.get('/data/:device_id', dataController.getDeviceData);
 router.get('/alerts', dataController.getAlerts);
 router.get('/secure-info', authenticateToken, (req, res) => {
-    res.json({
-      message: `This is protected data for ${req.user.username}`,
-      data: {
-        sensorReading: 42,
-        timestamp: new Date().toISOString()
-      }
-    });
+  res.json({
+    message: `This is protected data for ${req.user.username}`,
+    data: {
+      sensorReading: 42,
+      timestamp: new Date().toISOString()
+    }
   });
+});
 
 export default router;
