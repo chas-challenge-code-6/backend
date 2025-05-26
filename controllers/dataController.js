@@ -8,6 +8,7 @@ const createData = async (req, res) => {
 
     const data = await SensorData.create({
       device_id,
+      timestamp: new Date(),
       temperature: sensors.temperature,
       humidity: sensors.humidity,
       gas: sensors.gas?.ppm,
