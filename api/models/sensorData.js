@@ -9,10 +9,6 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    timestamp: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
     temperature: DataTypes.FLOAT,
     humidity: DataTypes.INTEGER,
     gas: DataTypes.INTEGER, // från sensors.gas.ppm
@@ -22,6 +18,8 @@ export default (sequelize, DataTypes) => {
     steps: DataTypes.INTEGER,
     device_battery: DataTypes.INTEGER,
     watch_battery: DataTypes.INTEGER
+  }, {
+    timestamps: true  
   });
 
   return SensorData;

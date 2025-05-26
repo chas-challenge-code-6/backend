@@ -4,7 +4,9 @@ import { Op } from 'sequelize';
 // POST /api/data
 const createData = async (req, res) => {
   try {
-    const { device_id, sensors } = req.body;
+    const { device_id, sensors, timestamp  } = req.body;
+
+    const createdAt = timestamp ? new Date(timestamp) : new Date();
 
     const data = await SensorData.create({
       device_id,
@@ -17,6 +19,7 @@ const createData = async (req, res) => {
       steps: sensors.steps,
       device_battery: sensors.device_battery,
       watch_battery: sensors.watch_battery,
+      createdAt,
     });
 
     res.status(201).json({
@@ -33,15 +36,14 @@ const getLatestData = async (req, res) => {
   try {
     const [results] = await SensorData.sequelize.query(`
       SELECT sd.*
-FROM SensorData sd
-INNER JOIN (
-  SELECT device_id, MAX(createdAt) AS latest
-  FROM SensorData
-  GROUP BY device_id
-) AS latest_data
-ON sd.device_id = latest_data.device_id
-AND sd.createdAt = latest_data.latest
-
+      FROM SensorData sd
+      INNER JOIN (
+        SELECT device_id, MAX(createdAt) AS latest
+        FROM SensorData
+        GROUP BY device_id
+      ) AS latest_data
+      ON sd.device_id = latest_data.device_id
+      AND sd.createdAt = latest_data.latest
     `);
 
     res.json(results);
@@ -66,11 +68,11 @@ const getDeviceData = async (req, res) => {
     const data = await SensorData.findAll({
       where: {
         device_id,
-        timestamp: {
+        createdAt: {
           [Op.between]: [start, end],
         },
       },
-      order: [['timestamp', 'DESC']],
+      order: [['createdAt', 'DESC']],
     });
 
     res.json(data);
@@ -90,7 +92,7 @@ const getAlerts = async (req, res) => {
           { fall_detected: true },
         ],
       },
-      order: [['timestamp', 'DESC']],
+      order: [['createdAt', 'DESC']],
     });
 
     const alerts = data.map((entry) => {
@@ -100,7 +102,7 @@ const getAlerts = async (req, res) => {
           type: 'gas',
           value: entry.gas,
           message: 'High gas level detected',
-          timestamp: entry.timestamp,
+          timestamp: entry.createdAt,
         };
       } else if (entry.noise_level > 100) {
         return {
@@ -108,7 +110,7 @@ const getAlerts = async (req, res) => {
           type: 'noise',
           value: entry.noise_level,
           message: 'High noise level detected',
-          timestamp: entry.timestamp,
+          timestamp: entry.createdAt,
         };
       } else if (entry.fall_detected) {
         return {
@@ -116,7 +118,7 @@ const getAlerts = async (req, res) => {
           type: 'fall',
           value: null,
           message: 'Fall detected',
-          timestamp: entry.timestamp,
+          timestamp: entry.createdAt,
         };
       }
     });

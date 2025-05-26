@@ -1,10 +1,9 @@
 const validateSensorData = (req, res, next) => {
-  const { device_id, timestamp, sensors } = req.body;
+  const { device_id,sensors } = req.body;
   const missingFields = [];
 
   // Top-level checks
   if (!device_id) missingFields.push('device_id');
-  if (!timestamp) missingFields.push('timestamp');
   if (!sensors) {
     missingFields.push('sensors');
   } else {
@@ -18,14 +17,6 @@ const validateSensorData = (req, res, next) => {
     if (sensors.steps === undefined) missingFields.push('sensors.steps');
     if (sensors.device_battery === undefined) missingFields.push('sensors.device_battery');
     if (sensors.watch_battery === undefined) missingFields.push('sensors.watch_battery');
-  }
-
-  // Invalid timestamp format
-  if (timestamp && isNaN(Date.parse(timestamp))) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'Invalid timestamp format. Expected ISO 8601.'
-    });
   }
 
   if (missingFields.length > 0) {
