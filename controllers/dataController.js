@@ -1,24 +1,14 @@
-import { SensorData, Device } from '../models/index.js';
+import { SensorData } from '../models/index.js';
 import { Op } from 'sequelize';
 
 // POST /api/data
 const createData = async (req, res) => {
   try {
     const { device_id, sensors, timestamp } = req.body;
-    // Attempt to get userId from token
-    let userId = req.user?.id;
+    const userId = req.user.id; // 🔐 hämtas från token
+
     const createdAt = timestamp ? new Date(timestamp) : new Date();
 
-    // If no userId (device token), resolve by looking up the device by body.device_id
-    if (!userId) {
-      const device = await Device.findOne({ where: { device_id } });
-      if (!device) {
-        return res.status(404).json({ error: 'Device not registered' });
-      }
-      userId = device.userId;
-    }
-
-    // Create the sensor data entry
     const data = await SensorData.create({
       userId,
       device_id,
