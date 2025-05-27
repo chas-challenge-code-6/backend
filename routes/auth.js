@@ -3,7 +3,9 @@ import authController from '../controllers/authController.js';
 import { authenticateToken } from '../middlewares/authenticateToken.js';
 
 const router = express.Router();
-router.get('/ping', (req, res) => res.send('auth router alive'));
+router.get('/ping', (req, res) => {
+  res.json({ alive: true });
+});
 
 /**
  * @swagger
