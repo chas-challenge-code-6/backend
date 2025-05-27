@@ -5,8 +5,19 @@ import { Op } from 'sequelize';
 const createData = async (req, res) => {
   try {
     const { device_id, sensors, timestamp, userId: bodyUserId } = req.body;
-    // Use user ID from token, or from request body, or fallback to device_id
-    const userId = req.user?.id ?? bodyUserId ?? device_id;
+    // Determine userId in order: user token, request body override, device token
+    let userId = null;
+    if (req.user?.id) {
+      userId = req.user.id;
+    } else if (bodyUserId) {
+      userId = bodyUserId;
+    } else if (req.user?.device_id) {
+      userId = req.user.device_id;
+    }
+
+    if (!userId) {
+      return res.status(400).json({ error: 'Missing userId for INSERT' });
+    }
 
     const createdAt = timestamp ? new Date(timestamp) : new Date();
 
