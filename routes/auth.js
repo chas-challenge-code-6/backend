@@ -95,10 +95,9 @@ router.post('/login', authController.loginUser);
  *       401:
  *         description: Unauthorized
  */
-
 router.post(
   '/devices/:deviceId/token',
-  authenticateToken, // t.ex. admin-only
+  authenticateToken, // must be mounted *after* you’ve created `app` in app.js
   authController.getDeviceToken
 );
 
