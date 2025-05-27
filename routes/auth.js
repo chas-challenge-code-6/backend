@@ -73,7 +73,6 @@ router.post('/register', authController.registerUser);
  */
 router.post('/login', authController.loginUser);
 
-//admin token for testing purposes
 /**
  * @swagger
  * /auth/devices/{deviceId}/token:
@@ -97,7 +96,7 @@ router.post('/login', authController.loginUser);
  */
 router.post(
   '/devices/:deviceId/token',
-  authenticateToken, // must be mounted *after* you’ve created `app` in app.js
+  authenticateToken, // must come after login
   authController.getDeviceToken
 );
 
