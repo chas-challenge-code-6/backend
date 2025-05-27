@@ -83,23 +83,19 @@ const loginUser = async (req, res) => {
         : null
     );
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          status: 'error',
-          message: 'Invalid credentials - user not found',
-        });
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid credentials - user not found',
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     console.log('Password match result:', isMatch);
     if (!isMatch) {
-      return res
-        .status(400)
-        .json({
-          status: 'error',
-          message: 'Invalid credentials - wrong password',
-        });
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid credentials - wrong password',
+      });
     }
 
     const token = generateToken(user);
