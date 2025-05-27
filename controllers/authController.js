@@ -18,7 +18,14 @@ const generateToken = (user) =>
 
 // 🔐 Generate "permanent" device JWT (ingen expiresIn)
 const generateDeviceToken = (device) =>
-  jwt.sign({ device_id: device.device_id, type: 'device' }, JWT_SECRET);
+  jwt.sign(
+    {
+      device_id: device.device_id,
+      userId: device.userId, // ← include this
+      type: 'device',
+    },
+    JWT_SECRET
+  );
 
 // POST /auth/register
 const registerUser = async (req, res) => {
