@@ -67,6 +67,7 @@ const registerUser = async (req, res) => {
 // POST /auth/login
 const loginUser = async (req, res) => {
   const { username, password } = req.body;
+  console.log('Login attempt - username:', username);
   if (!username || !password) {
     return res
       .status(400)
@@ -75,10 +76,30 @@ const loginUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ where: { username } });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    console.log(
+      'User fetched from DB:',
+      user
+        ? { id: user.id, username: user.username, password: user.password }
+        : null
+    );
+    if (!user) {
       return res
         .status(400)
-        .json({ status: 'error', message: 'Invalid credentials' });
+        .json({
+          status: 'error',
+          message: 'Invalid credentials - user not found',
+        });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log('Password match result:', isMatch);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({
+          status: 'error',
+          message: 'Invalid credentials - wrong password',
+        });
     }
 
     const token = generateToken(user);
