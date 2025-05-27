@@ -1,67 +1,119 @@
-<<<<<<< HEAD
 # backend
+
 Backend
 
-## 🧭 System Architecture Overview
-                         [ Hardware Device(s) ]
-                                 |
-                    Sends JSON via HTTP / MQTT
-                                 |
-                                 v
-                      [ Express.js API Server ]
-                                 |
-                   ┌─────────────┴──────────────┐
-                   |                            |
-         [ Middleware Layer ]        [ Route Handlers ]
-      (Auth, Validation, etc.)     (auth, data, stats)
+# 🚀 IoT Sensor Backend API
 
-                                 |
-                        ┌────────┴────────┐
-                        |                 |
-             [ Controllers / Services ]   |
-                        |                 |
-                        └───[ Sequelize ORM ]────┐
-                                                 |
-                                 [ PostgreSQL / MySQL / SQLite ]
-                                                 |
-                              Sensor Data, Users, Stats Tables
-                                 |
-                                 |
-                                 v
-                    ┌──────────────────────────┐
-                    |       CORS + JWT         |
-                    └──────────────────────────┘
-                                 |
-                        Serves to Frontends
-             ┌────────Consumes API (Fetch/Axios)────┐
-             |                                      |
-      [ Web Frontend ]                       [ Mobile App ]
-         (React)                             (React Native)
-=======
-# Project Sentinel – API Documentation
+A modern backend API built with **Express.js** and **Sequelize**, designed for collecting, analyzing, and retrieving sensor data from IoT devices like ESP32 units.
 
-## Overview
-
-This API allows communication between IoT sensor devices (e.g., ESP32) and the backend system. It enables real-time data collection, alert handling, and data access for frontend applications.
+**🔗 Live API:** [https://backend-pvrm.onrender.com](https://backend-pvrm.onrender.com)  
+**📘 API Docs (Swagger):** `/api-docs`
 
 ---
 
-## Endpoints
+## 📁 Project Structure
 
-### 1. Submit Sensor Data
+```
+.
+├── controllers/          # Handles business logic
+│   ├── authController.js
+│   ├── dataController.js
+│   └── statsController.js
+├── middlewares/          # Custom middleware
+│   ├── authenticateToken.js
+│   └── validateSensorData.js
+├── models/               # Sequelize models
+│   ├── index.js
+│   ├── sensorData.js
+│   └── user.js
+├── routes/               # Express route handlers
+│   ├── auth.js
+│   ├── data.js
+│   ├── stats.js
+│   └── index.js
+├── utils/                # Utility files (mailer, swagger config)
+├── .env                  # Environment config (🔓 public for this project)
+├── app.js                # Main Express app setup
+├── server.js             # Production server entry
+├── package.json
+└── README.md             # You're here
+```
 
-**POST** `/data`
+---
 
-Receives a JSON payload from an ESP32 sensor unit.
+## 🛠️ Getting Started
 
-#### Request Body
+Clone the repo and install dependencies:
+
+```bash
+git clone https://github.com/elinstella/backend.git
+cd backend
+npm install
+```
+
+### ▶️ Run locally:
+
+```bash
+npm run dev
+```
+
+Backend will be available at: `http://localhost:3000`
+
+---
+
+## 🔐 Authentication Flow
+
+### Register
+
+```http
+POST /auth/register
+```
+
+```json
+{
+  "username": "testuser",
+  "password": "test1234",
+  "email": "test@example.com"
+}
+```
+
+### Login
+
+```http
+POST /auth/login
+```
+
+Returns a **JWT token**.
+
+### Authenticated Actions (require Bearer token)
+
+- `GET /auth/me` - View profile
+- `PATCH /auth/me` - Update profile
+- `DELETE /auth/me` - Delete account
+- `POST /auth/logout` - Logout (handled client-side)
+
+### Password Recovery
+
+- `POST /auth/forgot-password` – Send reset email
+- `POST /auth/reset-password` – Reset using token
+
+---
+
+## 📡 Sensor Data Endpoints
+
+> All routes require a valid JWT token.
+
+### Submit Data
+
+```http
+POST /api/data
+```
 
 ```json
 {
   "device_id": "ESP32-001",
-  "timestamp": "2025-04-01T12:34:56Z",
   "sensors": {
-    "gas": "ppm": 400,
+    "gas": { "ppm": 400 },
     "temperature": 22.5,
     "humidity": 45,
     "fall_detected": false,
@@ -73,231 +125,56 @@ Receives a JSON payload from an ESP32 sensor unit.
 }
 ```
 
-#### Response
+### Latest per device
 
-```json
-{
-  "status": "success",
-  "message": "Data saved successfully"
-}
+```http
+GET /api/data/latest
 ```
 
----
+### Get history for device
 
-### 2. Get Latest Sensor Data
-
-**GET** `/data/latest`
-
-Returns the latest sensor data from each device.
-
-#### Response
-
-```json
-[
-  {
-    "device_id": "ESP32-001",
-    "timestamp": "2025-04-01T12:34:56Z",
-    "temperature": 22.5,
-    "humidity": 45,
-    "fall_detected": false,
-    "device_battery": 85,
-    "gas": 400,
-    "steps": 1000,
-    "heart_rate": 75,
-    "noise_level": 80
-  }
-]
+```http
+GET /api/data/:device_id?from=...&to=...
 ```
 
----
+### Alerts
 
-### 3. Get Device History
-
-**GET** `/data/:device_id`
-
-Query parameters:
-
-- `from`: ISO timestamp (optional)
-- `to`: ISO timestamp (optional)
-
-Example:
-
-```plaintext
-/data/ESP32-001?from=2025-04-01T00:00:00Z&to=2025-04-01T23:59:59Z
+```http
+GET /api/alerts
 ```
 
-#### Response
+Detects gas > 1000 ppm, fall detection, noise > 100 dB
 
-```json
-[
-  {
-    "timestamp": "2025-04-01T12:34:56Z",
-    "temperature": 22.5,
-    "humidity": 45,
-    "gas": 400,
-    "fall_detected": false,
-    "device_battery": 85,
-    "heart_rate": 75,
-    "noise_level": 80
-  }
-]
+---
+
+## 📊 Stats & Summary
+
+```http
+GET /stats/summary
 ```
 
----
+Returns:
 
-### 4. Get Alerts
-
-**GET** `/alerts`
-
-Returns a list of recent critical alerts (e.g. gas spike, fall detected).
-
-#### Response
-
-```json
-[
-  {
-    "device_id": "ESP32-001",
-    "type": "gas",
-    "value": 1000,
-    "message": "High gas level detected",
-    "timestamp": "2025-04-01T13:45:22Z"
-  }
-]
-```
+- Total entries
+- Device count
+- Averages for temperature, humidity, etc.
 
 ---
 
-## 🔐 Authentication Endpoints
+## 📝 Notes
 
-### POST `/auth/register`
+> ⚠️ `.env` file is public in this repo **intentionally** for educational purposes.  
+> ⚠️ Production apps should **never expose secrets or config like this**.
 
-Registers a new user.
-
-```json
-{
-  "username": "yourname",
-  "password": "securePass123!",
-  "email": "you@email.com"
-}
-```
-
-### POST `/auth/login`
-
-Logs in a user and returns a JWT token.
-
-### GET `/auth/me`
-
-Returns the logged-in user's profile. Requires Bearer token.
-
-### PATCH `/auth/me`
-
-Updates the user's profile. Partial updates allowed.
-
-### DELETE `/auth/me`
-
-Deletes the authenticated user. Requires Bearer token.
-
-### POST `/auth/forgot-password`
-
-Sends a password reset link via email.
-
-### POST `/auth/reset-password`
-
-Resets password using token from email.
+> Uses **Neon** as the cloud database (PostgreSQL-compatible).
 
 ---
 
-## 📟 Device Management
+## 🧪 Test it
 
-- **POST** `/devices/register`
-- **GET** `/devices`
-- **GET** `/devices/:id`
-- **PATCH** `/devices/:id/settings`
+Visit:
 
----
-
-## ⚠️ Incident Reporting
-
-- **POST** `/incidents`
-- **GET** `/incidents`
+- 🔗 [`/api-docs`](https://backend-pvrm.onrender.com/api-docs) – Swagger
+- Use [Thunder Client](https://www.thunderclient.com/) or Postman to test requests
 
 ---
-
-## 📊 Stats and Analytics
-
-- **GET** `/stats/summary`
-- **GET** `/stats/graph/:device_id`
-
----
-
-## Status Codes
-
-- `200 OK`: Request was successful
-- `400 Bad Request`: Missing or malformed data
-- `401 Unauthorized`: Missing or invalid token
-- `500 Internal Server Error`: Server-side failure
-
----
-
-## 🛠 Environment Setup
-
-To run the backend locally:
-
-1. Create a `.env.example` file in the root folder (if not already present).
-2. Copy it to a new `.env` file:
-   ```bash
-   cp .env.example .env
-   ```
-3. Ask a teammate (backend-team) for the correct values (e.g., database credentials, JWT secret).
-4. Start your server with:
-   ```bash
-   npm start
-   ```
-
-### Do not commit your `.env` file to Git!
-
-Use `.env.example` in version control, and share `.env` securely with your team.
-
-
-
-```
-project-Structure/
-│
-├── backend/
-│   ├── bin/
-│   │   └── server.js              # Server startup script
-│   ├── config/
-│   │   ├── config.cjs             # Application configuration
-│   │   └── database.js            # Database connection settings
-│   ├── controllers/
-│   │   ├── authController.js      # Authentication-related logic
-│   │   ├── dataController.js      # Data processing logic
-│   │   └── statsController.js     # Statistics processing logic
-│   ├── middlewares/
-│   │   ├── authenticateToken.js   # Token authentication middleware
-│   │   └── validateSensorData.js  # Sensor data validation middleware
-│   ├── models/
-│   │   ├── index.js               # Entry point for models
-│   │   └── sensorData.js          # Sensor data model
-│   ├── public/
-│   │   ├── stylesheets/           # CSS stylesheets
-│   │   └── index.html             # Static HTML file
-│   ├── routes/
-│   │   ├── auth.js                # Authentication API routes
-│   │   ├── data.js                # Data API routes
-│   │   ├── index.js               # Main API routes
-│   │   ├── stats.js              
-│   │   └── users.js               # User-related API routes
-│   ├── .env.example               # Sample environment variables file
-│   ├── app.js                    # Main Express application file
-│   ├── package.json              # Project dependencies
-│   └── package-lock.json
-│
-├── node_modules/                 # Installed node modules (auto-generated)
-├── .gitignore                   # Git ignore rules
-├── README.md                    # Project documentation
-└── package.json                 # Root-level package dependencies (if any)
-
-
-```
->>>>>>> b6a69550ef6e8d7e6e021a4a2962cc98532d821a

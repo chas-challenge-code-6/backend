@@ -4,9 +4,13 @@ import { Op } from 'sequelize';
 // POST /api/data
 const createData = async (req, res) => {
   try {
-    const { device_id, sensors } = req.body;
+    const { device_id, sensors, timestamp } = req.body;
+    const userId = req.user.id; // 🔐 hämtas från token
+
+    const createdAt = timestamp ? new Date(timestamp) : new Date();
 
     const data = await SensorData.create({
+      userId,
       device_id,
       temperature: sensors.temperature,
       humidity: sensors.humidity,
@@ -17,11 +21,13 @@ const createData = async (req, res) => {
       steps: sensors.steps,
       device_battery: sensors.device_battery,
       watch_battery: sensors.watch_battery,
+      createdAt,
     });
 
     res.status(201).json({
       status: 'success',
       message: 'Data saved successfully',
+      data,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -31,18 +37,27 @@ const createData = async (req, res) => {
 // GET /api/data/latest
 const getLatestData = async (req, res) => {
   try {
-    const [results] = await SensorData.sequelize.query(`
-      SELECT sd.*
-FROM SensorData sd
-INNER JOIN (
-  SELECT device_id, MAX(createdAt) AS latest
-  FROM SensorData
-  GROUP BY device_id
-) AS latest_data
-ON sd.device_id = latest_data.device_id
-AND sd.createdAt = latest_data.latest
+    const userId = req.user.id;
 
-    `);
+    const [results] = await SensorData.sequelize.query(
+      `
+      SELECT sd.*
+      FROM "SensorData" sd
+      INNER JOIN (
+        SELECT device_id, MAX("createdAt") AS latest
+        FROM "SensorData"
+        WHERE "userId" = :userId
+        GROUP BY device_id
+      ) AS latest_data
+      ON sd.device_id = latest_data.device_id
+      AND sd."createdAt" = latest_data.latest
+      WHERE sd."userId" = :userId
+    `,
+      {
+        replacements: { userId },
+        type: SensorData.sequelize.QueryTypes.SELECT,
+      }
+    );
 
     res.json(results);
   } catch (err) {
@@ -53,6 +68,7 @@ AND sd.createdAt = latest_data.latest
 // GET /api/data/:device_id
 const getDeviceData = async (req, res) => {
   const { device_id } = req.params;
+  const userId = req.user.id;
   let { start, end } = req.query;
 
   try {
@@ -65,12 +81,13 @@ const getDeviceData = async (req, res) => {
 
     const data = await SensorData.findAll({
       where: {
+        userId,
         device_id,
-        timestamp: {
+        createdAt: {
           [Op.between]: [start, end],
         },
       },
-      order: [['timestamp', 'DESC']],
+      order: [['createdAt', 'DESC']],
     });
 
     res.json(data);
@@ -82,15 +99,18 @@ const getDeviceData = async (req, res) => {
 // GET /api/alerts
 const getAlerts = async (req, res) => {
   try {
+    const userId = req.user.id;
+
     const data = await SensorData.findAll({
       where: {
+        userId,
         [Op.or]: [
           { gas: { [Op.gt]: 1000 } },
           { noise_level: { [Op.gt]: 100 } },
           { fall_detected: true },
         ],
       },
-      order: [['timestamp', 'DESC']],
+      order: [['createdAt', 'DESC']],
     });
 
     const alerts = data.map((entry) => {
@@ -100,7 +120,7 @@ const getAlerts = async (req, res) => {
           type: 'gas',
           value: entry.gas,
           message: 'High gas level detected',
-          timestamp: entry.timestamp,
+          timestamp: entry.createdAt,
         };
       } else if (entry.noise_level > 100) {
         return {
@@ -108,7 +128,7 @@ const getAlerts = async (req, res) => {
           type: 'noise',
           value: entry.noise_level,
           message: 'High noise level detected',
-          timestamp: entry.timestamp,
+          timestamp: entry.createdAt,
         };
       } else if (entry.fall_detected) {
         return {
@@ -116,7 +136,7 @@ const getAlerts = async (req, res) => {
           type: 'fall',
           value: null,
           message: 'Fall detected',
-          timestamp: entry.timestamp,
+          timestamp: entry.createdAt,
         };
       }
     });

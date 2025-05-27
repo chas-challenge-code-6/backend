@@ -1,3 +1,4 @@
+// models/index.js
 import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
@@ -13,17 +14,17 @@ const basename = path.basename(__filename);
 
 const db = {};
 
-// 🔌 Connect to DB
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT,
-    logging: false,
-  }
-);
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  protocol: 'postgres',
+  logging: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+});
 
 // 🚀 Load models dynamically
 const modelFiles = fs
@@ -33,27 +34,25 @@ const modelFiles = fs
       file.indexOf('.') !== 0 &&
       file !== basename &&
       file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
+      !file.endsWith('.test.js')
   );
 
 for (const file of modelFiles) {
-  const { default: modelDef } = await import(`./${file}`);
-  const model = modelDef(sequelize, Sequelize.DataTypes);
-  db[model.name] = model;
+  const modelName = file.replace('.js', '');
+  const { default: defineModel } = await import(`./${file}`);
+  const model = defineModel(sequelize, Sequelize.DataTypes);
+  db[modelName.charAt(0).toUpperCase() + modelName.slice(1)] = model; // exempel: user → User
 }
 
-// 🔗 Define associations if any
-for (const modelName of Object.keys(db)) {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
+// 🔗 Define associations
+Object.values(db).forEach((model) => {
+  if (model.associate) {
+    model.associate(db);
   }
-}
+});
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
-// 🔄 Auto-sync models to DB (adds missing columns)
-await sequelize.sync({ alter: true }); // <- This line enables live schema sync
 
 export default db;
 export const { SensorData } = db;
