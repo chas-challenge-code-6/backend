@@ -19,6 +19,16 @@ import dataRoutes from './routes/data.js';
 import authRoutes from './routes/auth.js';
 import statsRoutes from './routes/stats.js';
 
+(async () => {
+  try {
+    // This will create any missing tables (including Devices)
+    await db.sequelize.sync({ alter: true });
+    console.log('✅ Database synced with Sequelize (created missing tables)');
+  } catch (err) {
+    console.error('❌ Error syncing database:', err);
+  }
+})();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
