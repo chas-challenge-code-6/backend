@@ -20,7 +20,7 @@ export default (sequelize, DataTypes) => {
     },
     {
       tableName: 'Devices',
-      timestamps: true,
+      timestamps: false,
     }
   );
 
