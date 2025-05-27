@@ -4,7 +4,7 @@ import { authenticateToken } from '../middlewares/authenticateToken.js';
 
 const router = express.Router();
 
-// Public ping route to verify router is mounted
+// Health check
 router.get('/ping', (req, res) => res.json({ alive: true }));
 
 /**
@@ -14,7 +14,6 @@ router.get('/ping', (req, res) => res.json({ alive: true }));
  *   description: Authentication and user management
  */
 
-// Register a new user
 /**
  * @swagger
  * /auth/register:
@@ -46,7 +45,6 @@ router.get('/ping', (req, res) => res.json({ alive: true }));
  */
 router.post('/register', authController.registerUser);
 
-// User login
 /**
  * @swagger
  * /auth/login:
@@ -75,7 +73,6 @@ router.post('/register', authController.registerUser);
  */
 router.post('/login', authController.loginUser);
 
-// Generate permanent device token (requires valid user JWT)
 /**
  * @swagger
  * /auth/devices/{deviceId}/token:
@@ -103,7 +100,6 @@ router.post(
   authController.getDeviceToken
 );
 
-// Logout current user
 /**
  * @swagger
  * /auth/logout:
@@ -118,7 +114,6 @@ router.post(
  */
 router.post('/logout', authenticateToken, authController.logoutUser);
 
-// Forgot password
 /**
  * @swagger
  * /auth/forgot-password:
@@ -140,7 +135,6 @@ router.post('/logout', authenticateToken, authController.logoutUser);
  */
 router.post('/forgot-password', authController.forgotPassword);
 
-// Reset password
 /**
  * @swagger
  * /auth/reset-password:
@@ -166,7 +160,6 @@ router.post('/forgot-password', authController.forgotPassword);
  */
 router.post('/reset-password', authController.resetPassword);
 
-// Get current user profile
 /**
  * @swagger
  * /auth/me:
@@ -183,7 +176,6 @@ router.post('/reset-password', authController.resetPassword);
  */
 router.get('/me', authenticateToken, authController.getMe);
 
-// Update current user profile
 /**
  * @swagger
  * /auth/me:
@@ -216,7 +208,6 @@ router.get('/me', authenticateToken, authController.getMe);
  */
 router.patch('/me', authenticateToken, authController.updateMe);
 
-// Delete current user account
 /**
  * @swagger
  * /auth/me:
@@ -233,7 +224,6 @@ router.patch('/me', authenticateToken, authController.updateMe);
  */
 router.delete('/me', authenticateToken, authController.deleteMe);
 
-// Get all users
 /**
  * @swagger
  * /auth/users:
