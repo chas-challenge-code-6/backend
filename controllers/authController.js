@@ -16,12 +16,12 @@ const generateToken = (user) =>
     expiresIn: '200h',
   });
 
-// 🔐 Generate "permanent" device JWT (ingen expiresIn)
+// 🔐 Generate "permanent" device JWT (no expiresIn)
 const generateDeviceToken = (device) =>
   jwt.sign(
     {
       device_id: device.device_id,
-      userId: device.userId, // ← include this
+      userId: device.userId,
       type: 'device',
     },
     JWT_SECRET
