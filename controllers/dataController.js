@@ -5,11 +5,10 @@ import { Op } from 'sequelize';
 const createData = async (req, res) => {
   try {
     const { device_id, sensors, timestamp } = req.body;
-    const userId = req.user.id; // 🔐 hämtas från token
+    const userId = req.user.id;
 
-    const createdAt = timestamp ? new Date(timestamp) : new Date();
-
-    const data = await SensorData.create({
+    
+    const dataPayload = {
       userId,
       device_id,
       temperature: sensors.temperature,
@@ -21,8 +20,14 @@ const createData = async (req, res) => {
       steps: sensors.steps,
       device_battery: sensors.device_battery,
       watch_battery: sensors.watch_battery,
-      createdAt,
-    });
+    };
+
+    
+    if (timestamp) {
+      dataPayload.createdAt = new Date(timestamp);
+    }
+
+    const data = await SensorData.create(dataPayload);
 
     res.status(201).json({
       status: 'success',
@@ -33,6 +38,7 @@ const createData = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // GET /api/data/latest
 const getLatestData = async (req, res) => {
