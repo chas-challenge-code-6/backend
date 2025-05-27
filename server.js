@@ -1,10 +1,10 @@
-// server.js
-import dotenv from 'dotenv';
-dotenv.config();
+// server.js (or app.js entry point)
+import 'dotenv/config';
+import app from './app.js';
 
-import app from './app.js'; // ← måste peka på din app.js
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+// Bind to 0.0.0.0 so localhost and 127.0.0.1 are both accepted
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT} on all interfaces`);
 });
