@@ -28,7 +28,6 @@ const generateDeviceToken = (device) =>
   );
 
 // POST /auth/register
-// POST /auth/register
 const registerUser = async (req, res) => {
   const { username, password, email } = req.body;
   if (!username || !password || !email) {
@@ -58,16 +57,14 @@ const registerUser = async (req, res) => {
       data: { id: user.id, username: user.username },
     });
   } catch (err) {
-    console.error('❌ Error in registerUser:', err);
-    // Handle Sequelize validation & unique constraint errors
-    if (
-      err.name === 'SequelizeValidationError' ||
-      err.name === 'SequelizeUniqueConstraintError'
-    ) {
-      const errors = err.errors.map((e) => e.message);
-      return res.status(400).json({ status: 'error', errors });
+    console.error('❌ Error in registerUser:', JSON.stringify(err, null, 2));
+    // If Sequelize provided error details
+    if (err.errors && Array.isArray(err.errors)) {
+      const messages = err.errors.map((e) => e.message);
+      return res.status(400).json({ status: 'error', errors: messages });
     }
-    return res.status(500).json({ status: 'error', message: err.message });
+    // Fallback to raw error message
+    return res.status(400).json({ status: 'error', message: err.message });
   }
 };
 
