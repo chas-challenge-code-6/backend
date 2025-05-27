@@ -28,6 +28,7 @@ const generateDeviceToken = (device) =>
   );
 
 // POST /auth/register
+// POST /auth/register
 const registerUser = async (req, res) => {
   const { username, password, email } = req.body;
   if (!username || !password || !email) {
@@ -51,19 +52,20 @@ const registerUser = async (req, res) => {
       email,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       status: 'success',
       message: 'User registered successfully',
       data: { id: user.id, username: user.username },
     });
   } catch (err) {
     console.error('❌ Error in registerUser:', err);
-    // Handle Sequelize validation errors explicitly
-    if (err.name === 'SequelizeValidationError' && Array.isArray(err.errors)) {
-      const errors = err.errors.map((e) => e.message);
-      return res.status(400).json({ status: 'error', errors });
+    // If Sequelize validation error, return all messages
+    if (err.errors && Array.isArray(err.errors)) {
+      const messages = err.errors.map((e) => e.message);
+      return res.status(400).json({ status: 'error', errors: messages });
     }
-    res.status(500).json({ status: 'error', message: err.message });
+    // fallback for other errors
+    return res.status(500).json({ status: 'error', message: err.message });
   }
 };
 
