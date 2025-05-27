@@ -4,9 +4,9 @@ import { Op } from 'sequelize';
 // POST /api/data
 const createData = async (req, res) => {
   try {
-    const { device_id, sensors, timestamp } = req.body;
-    // Use user ID from token or fallback to the device_id when no user
-    const userId = req.user?.id ?? device_id;
+    const { device_id, sensors, timestamp, userId: bodyUserId } = req.body;
+    // Use user ID from token, or from request body, or fallback to device_id
+    const userId = req.user?.id ?? bodyUserId ?? device_id;
 
     const createdAt = timestamp ? new Date(timestamp) : new Date();
 
