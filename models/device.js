@@ -9,33 +9,21 @@ export default (sequelize, DataTypes) => {
       },
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+-       allowNull: false,
++       allowNull: true,    // temporarily allow NULL so the ALTER can succeed
         references: {
-          model: 'Users', // Assumes your users table is named "Users"
+          model: 'Users',
           key: 'id',
         },
       },
-      // additional fields can be added here
+      // …
     },
     {
       tableName: 'Devices',
-      timestamps: true, // Enable createdAt/updatedAt
+      timestamps: true,
     }
   );
 
-  // Association: a Device belongs to a User, and may have many SensorData entries
-  Device.associate = (models) => {
-    Device.belongsTo(models.User, {
-      foreignKey: 'userId',
-      as: 'owner',
-    });
-    if (models.SensorData) {
-      Device.hasMany(models.SensorData, {
-        foreignKey: 'device_id',
-        sourceKey: 'device_id',
-      });
-    }
-  };
-
+  // … associations …
   return Device;
 };
