@@ -14,30 +14,40 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
 ## 📁 Project Structure
 
 ```
-.
-├── controllers/          # Handles business logic
-│   ├── authController.js
-│   ├── dataController.js
-│   └── statsController.js
-├── middlewares/          # Custom middleware
-│   ├── authenticateToken.js
-│   └── validateSensorData.js
-├── models/               # Sequelize models
-│   ├── index.js
-│   ├── sensorData.js
-│   └── user.js
-├── routes/               # Express route handlers
-│   ├── auth.js
-│   ├── data.js
-│   ├── stats.js
-│   └── index.js
-├── utils/                # Utility files (mailer, swagger config)
-├── .env                  # Environment config (🔓 public for this project)
-├── app.js                # Main Express app setup
-├── server.js             # Production server entry
-├── package.json
-└── README.md             # You're here
-```
+                     [ Hardware Device(s) ]
+                             |
+                Sends JSON via HTTP / MQTT
+                             |
+                             v
+                  [ Express.js API Server ]
+                             |
+               ┌─────────────┴──────────────┐
+               |                            |
+     [ Middleware Layer ]        [ Route Handlers ]
+  (Auth, Validation, etc.)     (auth, data, stats)
+
+                             |
+                    ┌────────┴────────┐
+                    |                 |
+         [ Controllers            Services ]   
+                    |                 |
+                    └───[ Sequelize ORM ]────┐
+                                             |
+                                       [ PostgreSQL  ]
+                                             |
+                          Sensor Data, Users, Stats Tables
+                             |
+                             |
+                             v
+                ┌──────────────────────────┐
+                |           JWT            |
+                └──────────────────────────┘
+                             |
+                    Serves to Frontends
+         ┌────────Consumes API    ( Fetch  )────┐
+         |                                      |
+  [ Web Frontend ]                       [ Mobile App ]
+     (React)                             (React Native)****
 
 ---
 
@@ -46,7 +56,7 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
 Clone the repo and install dependencies:
 
 ```bash
-git clone https://github.com/elinstella/backend.git
+git clone https://github.com/chas-challenge-code-6/backend    or    https://github.com/elinstella/backend.git
 cd backend
 npm install
 ```
@@ -54,6 +64,7 @@ npm install
 ### ▶️ Run locally:
 
 ```bash
+npm install
 npm run dev
 ```
 
