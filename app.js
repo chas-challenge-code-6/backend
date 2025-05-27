@@ -1,20 +1,24 @@
 // app.js
+
+import dotenv from 'dotenv';
+dotenv.config(); // 1) load .env before anything else
+
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import cors from 'cors';
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+import db from './models/index.js';
+import { swaggerUi, specs } from './utils/swagger.js';
+
 import indexRouter from './routes/index.js';
 import dataRoutes from './routes/data.js';
 import authRoutes from './routes/auth.js';
 import statsRoutes from './routes/stats.js';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import db from './models/index.js';
-import { swaggerUi, specs } from './utils/swagger.js'; 
-
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,13 +46,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use('/', indexRouter);
 app.use('/api', dataRoutes);
-app.use('/auth', authRoutes);
+app.use('/auth', authRoutes); // mount auth here (only once)
 app.use('/stats', statsRoutes);
 
-// ✅ Swagger UI
+// Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-// Fallback route for 404
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ status: 'error', message: 'Route not found' });
 });

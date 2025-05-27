@@ -70,6 +70,35 @@ router.post('/register', authController.registerUser);
  */
 router.post('/login', authController.loginUser);
 
+//admin token for testing purposes
+/**
+ * @swagger
+ * /auth/devices/{deviceId}/token:
+ *   post:
+ *     summary: Get permanent JWT for a device
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: deviceId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the device (e.g. SENTINEL-001)
+ *     responses:
+ *       200:
+ *         description: Permanent device token returned
+ *       401:
+ *         description: Unauthorized
+ */
+
+router.post(
+  '/devices/:deviceId/token',
+  authenticateToken, // t.ex. admin-only
+  authController.getDeviceToken
+);
+
 /**
  * @swagger
  * /auth/logout:
