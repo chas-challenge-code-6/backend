@@ -5,21 +5,20 @@ import { Op } from 'sequelize';
 const createData = async (req, res) => {
   try {
     const { device_id, sensors, timestamp, userId: bodyUserId } = req.body;
-    // Determine userId in order: user token, request body override, device token
-    let userId = null;
-    if (req.user?.id) {
-      userId = req.user.id;
-    } else if (bodyUserId) {
-      userId = bodyUserId;
-    } else if (req.user?.device_id) {
-      userId = req.user.device_id;
-    }
+    const userId = req.user?.id ?? req.user?.device_id ?? bodyUserId;
 
     if (!userId) {
+      console.error(
+        'Missing userId; req.user:',
+        req.user,
+        'bodyUserId:',
+        bodyUserId
+      );
       return res.status(400).json({ error: 'Missing userId for INSERT' });
     }
 
     const createdAt = timestamp ? new Date(timestamp) : new Date();
+    console.log(`Inserting data for userId=${userId}, device_id=${device_id}`);
 
     const data = await SensorData.create({
       userId,
@@ -36,12 +35,11 @@ const createData = async (req, res) => {
       createdAt,
     });
 
-    res.status(201).json({
-      status: 'success',
-      message: 'Data saved successfully',
-      data,
-    });
+    res
+      .status(201)
+      .json({ status: 'success', message: 'Data saved successfully', data });
   } catch (err) {
+    console.error('Error in createData:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -64,14 +62,11 @@ const getLatestData = async (req, res) => {
       AND sd."createdAt" = latest_data.latest
       WHERE sd."userId" = :userId
       `,
-      {
-        replacements: { userId },
-        type: SensorData.sequelize.QueryTypes.SELECT,
-      }
+      { replacements: { userId }, type: SensorData.sequelize.QueryTypes.SELECT }
     );
-
     res.json(results);
   } catch (err) {
+    console.error('Error in getLatestData:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -91,16 +86,13 @@ const getDeviceData = async (req, res) => {
     }
 
     const data = await SensorData.findAll({
-      where: {
-        userId,
-        device_id,
-        createdAt: { [Op.between]: [start, end] },
-      },
+      where: { userId, device_id, createdAt: { [Op.between]: [start, end] } },
       order: [['createdAt', 'DESC']],
     });
 
     res.json(data);
   } catch (err) {
+    console.error('Error in getDeviceData:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -122,7 +114,7 @@ const getAlerts = async (req, res) => {
     });
 
     const alerts = data.map((entry) => {
-      if (entry.gas > 1000) {
+      if (entry.gas > 1000)
         return {
           device_id: entry.device_id,
           type: 'gas',
@@ -130,8 +122,7 @@ const getAlerts = async (req, res) => {
           message: 'High gas level detected',
           timestamp: entry.createdAt,
         };
-      }
-      if (entry.noise_level > 100) {
+      if (entry.noise_level > 100)
         return {
           device_id: entry.device_id,
           type: 'noise',
@@ -139,8 +130,7 @@ const getAlerts = async (req, res) => {
           message: 'High noise level detected',
           timestamp: entry.createdAt,
         };
-      }
-      if (entry.fall_detected) {
+      if (entry.fall_detected)
         return {
           device_id: entry.device_id,
           type: 'fall',
@@ -148,13 +138,24 @@ const getAlerts = async (req, res) => {
           message: 'Fall detected',
           timestamp: entry.createdAt,
         };
-      }
       return null;
     });
 
     res.json(alerts.filter(Boolean));
   } catch (err) {
+    console.error('Error in getAlerts:', err);
     res.status(500).json({ error: err.message });
+  }
+};
+
+// Health check endpoint
+const healthCheck = async (req, res) => {
+  try {
+    await SensorData.sequelize.authenticate();
+    res.json({ status: 'ok', database: 'connected' });
+  } catch (err) {
+    console.error('HealthCheck failed:', err);
+    res.status(500).json({ status: 'error', database: 'disconnected' });
   }
 };
 
@@ -163,4 +164,5 @@ export default {
   getLatestData,
   getDeviceData,
   getAlerts,
+  healthCheck,
 };
