@@ -28,6 +28,7 @@ const generateDeviceToken = (device) =>
   );
 
 // POST /auth/register
+// POST /auth/register
 const registerUser = async (req, res) => {
   const { username, password, email } = req.body;
   if (!username || !password || !email) {
@@ -57,14 +58,9 @@ const registerUser = async (req, res) => {
       data: { id: user.id, username: user.username },
     });
   } catch (err) {
-    console.error('❌ Error in registerUser:', JSON.stringify(err, null, 2));
-    // If Sequelize provided error details
-    if (err.errors && Array.isArray(err.errors)) {
-      const messages = err.errors.map((e) => e.message);
-      return res.status(400).json({ status: 'error', errors: messages });
-    }
-    // Fallback to raw error message
-    return res.status(400).json({ status: 'error', message: err.message });
+    console.error('❌ Full error in registerUser:', err);
+    // Dump full error object for debugging
+    return res.status(400).json({ status: 'error', error: err });
   }
 };
 
