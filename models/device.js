@@ -7,13 +7,35 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         primaryKey: true,
       },
-      // här kan du lägga till fler fält om du vill
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Users', // Assumes your users table is named "Users"
+          key: 'id',
+        },
+      },
+      // additional fields can be added here
     },
     {
       tableName: 'Devices',
-      timestamps: false, // sätt till true om du vill spara createdAt/updatedAt
+      timestamps: true, // Enable createdAt/updatedAt
     }
   );
+
+  // Association: a Device belongs to a User, and may have many SensorData entries
+  Device.associate = (models) => {
+    Device.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'owner',
+    });
+    if (models.SensorData) {
+      Device.hasMany(models.SensorData, {
+        foreignKey: 'device_id',
+        sourceKey: 'device_id',
+      });
+    }
+  };
 
   return Device;
 };
