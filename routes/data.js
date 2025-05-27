@@ -1,3 +1,4 @@
+//data.js
 import express from 'express';
 import dataController from '../controllers/dataController.js';
 import validateSensorData from '../middlewares/validateSensorData.js';
@@ -112,5 +113,9 @@ router.get('/data/:device_id', authenticateToken, dataController.getDeviceData);
  *         description: Unauthorized
  */
 router.get('/alerts', authenticateToken, dataController.getAlerts);
+
+// GET /api/data/health
+// Health check — returns { status: 'ok', database: 'connected' } if DB is reachable
+router.get('/data/health', dataController.healthCheck);
 
 export default router;

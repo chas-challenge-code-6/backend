@@ -1,3 +1,4 @@
+//auth.js
 import express from 'express';
 import authController from '../controllers/authController.js';
 import { authenticateToken } from '../middlewares/authenticateToken.js';
