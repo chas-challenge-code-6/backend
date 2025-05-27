@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import app from './app.js'; // ← Pekar på din app.js
+import app from './app.js'; // ← måste peka på din app.js
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
