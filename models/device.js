@@ -9,8 +9,8 @@ export default (sequelize, DataTypes) => {
       },
       userId: {
         type: DataTypes.INTEGER,
--       allowNull: false,
-+       allowNull: true,    // temporarily allow NULL so the ALTER can succeed
+        //allowNull: false,
+        allowNull: true, // temporarily allow NULL so the ALTER can succeed
         references: {
           model: 'Users',
           key: 'id',

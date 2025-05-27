@@ -3,20 +3,46 @@ import authController from '../controllers/authController.js';
 import { authenticateToken } from '../middlewares/authenticateToken.js';
 
 const router = express.Router();
+router.get('/ping', (req, res) => {
+  res.json({ alive: true });
+});
 
 /**
  * @swagger
- * /auth/ping:
- *   get:
- *     summary: Health check for auth routes
- *     tags: [Auth]
- *     responses:
- *       200:
- *         description: Service is alive
+ * tags:
+ *   name: Auth
+ *   description: Authentication and user management
  */
-// Health check
-router.get('/ping', (req, res) => res.json({ alive: true }));
 
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *               - email
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Bad request
+ */
 router.post('/register', authController.registerUser);
 
 /**
@@ -47,6 +73,7 @@ router.post('/register', authController.registerUser);
  */
 router.post('/login', authController.loginUser);
 
+//admin token for testing purposes
 /**
  * @swagger
  * /auth/devices/{deviceId}/token:

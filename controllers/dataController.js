@@ -5,11 +5,7 @@ import { Op } from 'sequelize';
 const createData = async (req, res) => {
   try {
     const { device_id, sensors, timestamp } = req.body;
-    // Support both user and device tokens by reading userId from either field
-    const userId = req.user.id || req.user.userId;
-    if (!userId) {
-      return res.status(401).json({ message: 'Missing userId in token' });
-    }
+    const userId = req.user.id; // 🔐 hämtas från token
 
     const createdAt = timestamp ? new Date(timestamp) : new Date();
 
@@ -41,7 +37,7 @@ const createData = async (req, res) => {
 // GET /api/data/latest
 const getLatestData = async (req, res) => {
   try {
-    const userId = req.user.id || req.user.userId;
+    const userId = req.user.id;
 
     const [results] = await SensorData.sequelize.query(
       `
@@ -72,15 +68,15 @@ const getLatestData = async (req, res) => {
 // GET /api/data/:device_id
 const getDeviceData = async (req, res) => {
   const { device_id } = req.params;
-  const userId = req.user.id || req.user.userId;
+  const userId = req.user.id;
   let { start, end } = req.query;
 
   try {
     if (!start || !end) {
       const now = new Date();
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      start = yesterday.toISOString();
-      end = now.toISOString();
+      start = start || yesterday.toISOString();
+      end = end || now.toISOString();
     }
 
     const data = await SensorData.findAll({
@@ -103,7 +99,7 @@ const getDeviceData = async (req, res) => {
 // GET /api/alerts
 const getAlerts = async (req, res) => {
   try {
-    const userId = req.user.id || req.user.userId;
+    const userId = req.user.id;
 
     const data = await SensorData.findAll({
       where: {
