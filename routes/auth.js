@@ -3,6 +3,8 @@ import authController from '../controllers/authController.js';
 import { authenticateToken } from '../middlewares/authenticateToken.js';
 
 const router = express.Router();
+
+// Ping route to verify router is mounted
 router.get('/ping', (req, res) => {
   res.json({ alive: true });
 });
@@ -96,7 +98,7 @@ router.post('/login', authController.loginUser);
  */
 router.post(
   '/devices/:deviceId/token',
-  authenticateToken, // must come after login
+  authenticateToken,
   authController.getDeviceToken
 );
 
