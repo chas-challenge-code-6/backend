@@ -6,7 +6,7 @@ import { sendResetEmail } from '../utils/mailer.js';
 const { User, Device } = db;
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-  console.error('❌ JWT_SECRET saknas! Avbryter start.');
+  console.error('❌ JWT_SECRET missing! Aborting startup.');
   process.exit(1);
 }
 
@@ -16,7 +16,7 @@ const generateToken = (user) =>
     expiresIn: '200h',
   });
 
-// 🔐 Generate "permanent" device JWT (ingen expiresIn)
+// 🔐 Generate "permanent" device JWT (no expiresIn)
 const generateDeviceToken = (device) =>
   jwt.sign(
     {
@@ -58,6 +58,11 @@ const registerUser = async (req, res) => {
     });
   } catch (err) {
     console.error('❌ Error in registerUser:', err);
+    // Handle Sequelize validation errors explicitly
+    if (err.name === 'SequelizeValidationError' && Array.isArray(err.errors)) {
+      const errors = err.errors.map((e) => e.message);
+      return res.status(400).json({ status: 'error', errors });
+    }
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
@@ -104,6 +109,7 @@ const getMe = async (req, res) => {
     }
     res.json({ status: 'success', data: user });
   } catch (err) {
+    console.error('❌ Error in getMe:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
@@ -128,6 +134,7 @@ const updateMe = async (req, res) => {
     await user.save();
     res.json({ status: 'success', message: 'Profile updated successfully' });
   } catch (err) {
+    console.error('❌ Error in updateMe:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
@@ -143,6 +150,7 @@ const deleteMe = async (req, res) => {
     }
     res.json({ status: 'success', message: 'User deleted successfully' });
   } catch (err) {
+    console.error('❌ Error in deleteMe:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
@@ -164,6 +172,7 @@ const forgotPassword = async (req, res) => {
     await sendResetEmail(user.email, token);
     res.json({ status: 'success', message: 'Password reset email sent' });
   } catch (err) {
+    console.error('❌ Error in forgotPassword:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
 };
@@ -183,6 +192,7 @@ const resetPassword = async (req, res) => {
     await user.save();
     res.json({ status: 'success', message: 'Password has been reset' });
   } catch (err) {
+    console.error('❌ Error in resetPassword:', err);
     res
       .status(400)
       .json({ status: 'error', message: 'Invalid or expired token' });
