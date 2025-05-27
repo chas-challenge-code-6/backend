@@ -59,11 +59,13 @@ Clone the repo and install dependencies:
 git clone https://github.com/chas-challenge-code-6/backend    or    https://github.com/elinstella/backend.git
 cd backend
 npm install
+npm run dev
 ```
 
 ### ▶️ Run locally:
 
 ```bash
+cd backend
 npm install
 npm run dev
 ```
