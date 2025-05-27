@@ -79,8 +79,8 @@ const getDeviceData = async (req, res) => {
     if (!start || !end) {
       const now = new Date();
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      start = start || yesterday.toISOString();
-      end = end || now.toISOString();
+      start = yesterday.toISOString();
+      end = now.toISOString();
     }
 
     const data = await SensorData.findAll({
