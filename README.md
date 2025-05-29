@@ -6,7 +6,7 @@ Backend
 
 A modern backend API built with **Express.js** and **Sequelize**, designed for collecting, analyzing, and retrieving sensor data from IoT devices like ESP32 units.
 
-**🔗 Live API:** [https://backend-pvrm.onrender.com](https://backend-pvrm.onrender.com)  
+**🔗 Live API:** [https://backend-belz.onrender.com](https://backend-belz.onrender.com)  
 **📘 API Docs (Swagger):** `/api-docs`
 
 ---
@@ -133,7 +133,8 @@ POST /api/data
     "heart_rate": 75,
     "noise_level": 80,
     "steps": 1000,
-    "device_battery": 85
+    "device_battery": 85,
+    "strap_battery": 100
   }
 }
 ```
@@ -187,7 +188,7 @@ Returns:
 
 Visit:
 
-- 🔗 [`/api-docs`](https://backend-pvrm.onrender.com/api-docs) – Swagger
+- 🔗 [`/api-docs`](https://backend-belz.onrender.com/api-docs) – Swagger
 - Use [Thunder Client](https://www.thunderclient.com/) or Postman to test requests
 
 ---
