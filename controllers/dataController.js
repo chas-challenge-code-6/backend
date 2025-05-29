@@ -31,7 +31,7 @@ const createData = async (req, res) => {
       noise_level: sensors.noise_level,
       steps: sensors.steps,
       device_battery: sensors.device_battery,
-      watch_battery: sensors.watch_battery,
+      strap_battery: sensors.strap_battery,
       createdAt,
     });
 
