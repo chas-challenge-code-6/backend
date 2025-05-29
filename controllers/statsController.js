@@ -1,19 +1,16 @@
 import { SensorData } from '../models/index.js';
 import { fn, col } from 'sequelize';
 
-
 const getStatsSummary = async (req, res) => {
   try {
     // Total number of entries
     const totalEntries = await SensorData.count();
-
 
     // Number of distinct devices
     const deviceCount = await SensorData.count({
       distinct: true,
       col: 'device_id',
     });
-
 
     // Average sensor values (only numerical, meaningful fields)
     const averages = await SensorData.findAll({
@@ -28,7 +25,6 @@ const getStatsSummary = async (req, res) => {
       ],
     });
 
-
     res.json({
       totalEntries,
       deviceCount,
@@ -39,10 +35,6 @@ const getStatsSummary = async (req, res) => {
   }
 };
 
-
 export default {
   getStatsSummary,
 };
-
-
-
