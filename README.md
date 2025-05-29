@@ -48,7 +48,7 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
          |                                      |
   [ Web Frontend ]                       [ Mobile App ]
      (React)                             (React Native)****
-
+```
 ---
 
 ## 🛠️ Getting Started
