@@ -11,23 +11,12 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-import db from './models/index.js';
 import { swaggerUi, specs } from './utils/swagger.js';
 
 import indexRouter from './routes/index.js';
 import dataRoutes from './routes/data.js';
 import authRoutes from './routes/auth.js';
 import statsRoutes from './routes/stats.js';
-
-(async () => {
-  try {
-    // This will create any missing tables (including Devices)
-    await db.sequelize.sync({ alter: true });
-    console.log('✅ Database synced with Sequelize (created missing tables)');
-  } catch (err) {
-    console.error('❌ Error syncing database:', err);
-  }
-})();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -41,7 +30,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
-// ───────────────────────────────────────────────────────────────────────────────
 
 // ─── R O U T E   M O U N T S ──────────────────────────────────────────────────
 app.use('/', indexRouter);

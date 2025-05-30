@@ -6,15 +6,24 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: "Sentinel API",
+      title: 'Sentinel API',
       version: '1.0.0',
       description: 'API documentation for user authentication and other routes',
     },
     servers: [
       {
-        url: 'https://backend-pvrm.onrender.com',
+        url: 'https://backend-belz.onrender.com/',
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
   apis: ['./routes/*.js'], // Scans all route files for Swagger comments
 };

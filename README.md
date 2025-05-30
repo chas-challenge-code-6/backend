@@ -2,12 +2,14 @@
 
 Backend
 
+![CI](https://github.com/chas-challenge-code-6/backend/actions/workflows/test.yml/badge.svg)
+
 # 🚀 IoT Sensor Backend API
 
 A modern backend API built with **Express.js** and **Sequelize**, designed for collecting, analyzing, and retrieving sensor data from IoT devices like ESP32 units.
 
-**🔗 Live API:** [https://backend-belz.onrender.com](https://backend-belz.onrender.com)  
-**📘 API Docs (Swagger):** `/api-docs`
+🚀 **Live API:** [https://backend-belz.onrender.com](https://backend-belz.onrender.com)  
+📘 **Swagger Docs:** [https://backend-belz.onrender.com/api-docs](https://backend-belz.onrender.com/api-docs)
 
 ---
 
@@ -29,7 +31,7 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
                              |
                     ┌────────┴────────┐
                     |                 |
-         [ Controllers            Services ]   
+         [ Controllers            Services ]
                     |                 |
                     └───[ Sequelize ORM ]────┐
                                              |
@@ -49,6 +51,7 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
   [ Web Frontend ]                       [ Mobile App ]
      (React)                             (React Native)****
 ```
+
 ---
 
 ## 🛠️ Getting Started
@@ -56,7 +59,7 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
 Clone the repo and install dependencies:
 
 ```bash
-git clone https://github.com/chas-challenge-code-6/backend    or    https://github.com/elinstella/backend.git
+git clone https://github.com/chas-challenge-code-6/backend
 cd backend
 npm install
 npm run dev
@@ -190,5 +193,9 @@ Visit:
 
 - 🔗 [`/api-docs`](https://backend-belz.onrender.com/api-docs) – Swagger
 - Use [Thunder Client](https://www.thunderclient.com/) or Postman to test requests
+
+```bash
+npm test
+```
 
 ---
