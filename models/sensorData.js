@@ -16,7 +16,7 @@ export default (sequelize, DataTypes) => {
       gas: DataTypes.FLOAT,
       fall_detected: DataTypes.BOOLEAN,
       heart_rate: DataTypes.INTEGER,
-      noise_level: DataTypes.INTEGER,
+      noise_level: DataTypes.FLOAT,
       steps: DataTypes.INTEGER,
       device_battery: DataTypes.INTEGER,
       strap_battery: DataTypes.INTEGER,

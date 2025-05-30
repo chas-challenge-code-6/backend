@@ -2,7 +2,7 @@
 
 Backend
 
-![CI](https://github.com/elinstella/backend/actions/workflows/test.yml/badge.svg)
+![CI](https://github.com/chas-challenge-code-6/backend/actions/workflows/test.yml/badge.svg)
 
 # 🚀 IoT Sensor Backend API
 
