@@ -2,12 +2,14 @@
 
 Backend
 
+![CI](https://github.com/elinstella/backend/actions/workflows/test.yml/badge.svg)
+
 # 🚀 IoT Sensor Backend API
 
 A modern backend API built with **Express.js** and **Sequelize**, designed for collecting, analyzing, and retrieving sensor data from IoT devices like ESP32 units.
 
-**🔗 Live API:** [https://backend-belz.onrender.com](https://backend-belz.onrender.com)  
-**📘 API Docs (Swagger):** `/api-docs`
+🚀 **Live API:** [https://backend-belz.onrender.com](https://backend-belz.onrender.com)  
+📘 **Swagger Docs:** [https://backend-belz.onrender.com/api-docs](https://backend-belz.onrender.com/api-docs)
 
 ---
 
@@ -29,7 +31,7 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
                              |
                     ┌────────┴────────┐
                     |                 |
-         [ Controllers            Services ]   
+         [ Controllers            Services ]
                     |                 |
                     └───[ Sequelize ORM ]────┐
                                              |
@@ -49,6 +51,7 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
   [ Web Frontend ]                       [ Mobile App ]
      (React)                             (React Native)****
 ```
+
 ---
 
 ## 🛠️ Getting Started
