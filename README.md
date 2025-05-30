@@ -194,4 +194,8 @@ Visit:
 - 🔗 [`/api-docs`](https://backend-belz.onrender.com/api-docs) – Swagger
 - Use [Thunder Client](https://www.thunderclient.com/) or Postman to test requests
 
+```bash
+npm test
+```
+
 ---
