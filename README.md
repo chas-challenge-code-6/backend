@@ -59,7 +59,7 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
 Clone the repo and install dependencies:
 
 ```bash
-git clone https://github.com/chas-challenge-code-6/backend    or    https://github.com/elinstella/backend.git
+git clone https://github.com/chas-challenge-code-6/backend
 cd backend
 npm install
 npm run dev
