@@ -1,4 +1,3 @@
-// app.js
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -12,6 +11,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 import { swaggerUi, specs } from './utils/swagger.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 import indexRouter from './routes/index.js';
 import dataRoutes from './routes/data.js';
@@ -37,12 +37,23 @@ app.use('/api', dataRoutes);
 app.use('/auth', authRoutes);
 app.use('/stats', statsRoutes);
 
-// Swagger UI
+// ─── S W A G G E R ────────────────────────────────────────────────────────────
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-// 404 fallback
-app.use((req, res) => {
-  res.status(404).json({ status: 'error', message: 'Route not found' });
+// ─── R A W   S W A G G E R   J S O N ──────────────────────────────────────────
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(specs);
 });
+
+// ─── 404 H A N D L I N G ──────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  const err = new Error('Route not found');
+  err.status = 404;
+  next(err);
+});
+
+// ─── C E N T R A L   E R R O R   H A N D L E R ─────────────────────────────────
+app.use(errorHandler);
 
 export default app;

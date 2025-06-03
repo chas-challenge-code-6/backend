@@ -1,7 +1,7 @@
 import { SensorData } from '../models/index.js';
 import { fn, col } from 'sequelize';
 
-const getStatsSummary = async (req, res) => {
+const getStatsSummary = async (req, res, next) => {
   try {
     // Total number of entries
     const totalEntries = await SensorData.count();
@@ -32,7 +32,8 @@ const getStatsSummary = async (req, res) => {
       averages: averages[0].dataValues, // Sequelize returns array, take the first result object
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    err.status = 500;
+    next(err);
   }
 };
 

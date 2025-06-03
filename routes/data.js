@@ -1,4 +1,3 @@
-// routes/data.js
 import express from 'express';
 import dataController from '../controllers/dataController.js';
 import validateSensorData from '../middlewares/validateSensorData.js';
@@ -46,9 +45,11 @@ const router = express.Router();
  *       201:
  *         description: Data created successfully
  *       400:
- *         description: Validation error
+ *         description: Validation error or missing user ID
  *       401:
  *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
  */
 router.post(
   '/data',
@@ -70,6 +71,8 @@ router.post(
  *         description: Latest data retrieved successfully
  *       401:
  *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
  */
 router.get('/data/latest', authenticateToken, dataController.getLatestData);
 
@@ -109,7 +112,9 @@ router.get('/data/health', dataController.healthCheck);
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Device not found
+ *         description: Device not found or no data available
+ *       500:
+ *         description: Internal server error
  */
 router.get('/data/:device_id', authenticateToken, dataController.getDeviceData);
 
@@ -126,6 +131,8 @@ router.get('/data/:device_id', authenticateToken, dataController.getDeviceData);
  *         description: Alerts retrieved successfully
  *       401:
  *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
  */
 router.get('/alerts', authenticateToken, dataController.getAlerts);
 

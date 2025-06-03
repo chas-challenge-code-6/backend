@@ -28,21 +28,20 @@ const generateDeviceToken = (device) =>
   );
 
 // POST /auth/register
-// POST /auth/register
-const registerUser = async (req, res) => {
+const registerUser = async (req, res, next) => {
   const { username, password, email } = req.body;
   if (!username || !password || !email) {
-    return res
-      .status(400)
-      .json({ status: 'error', message: 'All fields are required' });
+    const err = new Error('All fields are required');
+    err.status = 400;
+    return next(err);
   }
 
   try {
     const userExists = await User.findOne({ where: { username } });
     if (userExists) {
-      return res
-        .status(400)
-        .json({ status: 'error', message: 'User already exists' });
+      const err = new Error('User already exists');
+      err.status = 400;
+      return next(err);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -59,19 +58,19 @@ const registerUser = async (req, res) => {
     });
   } catch (err) {
     console.error('❌ Full error in registerUser:', err);
-    // Dump full error object for debugging
-    return res.status(400).json({ status: 'error', error: err });
+    err.status = 400;
+    return next(err);
   }
 };
 
 // POST /auth/login
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   const { username, password } = req.body;
   console.log('Login attempt - username:', username);
   if (!username || !password) {
-    return res
-      .status(400)
-      .json({ status: 'error', message: 'Username and password are required' });
+    const err = new Error('Username and password are required');
+    err.status = 400;
+    return next(err);
   }
 
   try {
@@ -83,19 +82,17 @@ const loginUser = async (req, res) => {
         : null
     );
     if (!user) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Invalid credentials - user not found',
-      });
+      const err = new Error('Invalid credentials - user not found');
+      err.status = 400;
+      return next(err);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     console.log('Password match result:', isMatch);
     if (!isMatch) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Invalid credentials - wrong password',
-      });
+      const err = new Error('Invalid credentials - wrong password');
+      err.status = 400;
+      return next(err);
     }
 
     const token = generateToken(user);
@@ -106,36 +103,38 @@ const loginUser = async (req, res) => {
     });
   } catch (err) {
     console.error('❌ Error in loginUser:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    err.status = 500;
+    return next(err);
   }
 };
 
 // GET /auth/me
-const getMe = async (req, res) => {
+const getMe = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.user.id, {
       attributes: { exclude: ['password'] },
     });
     if (!user) {
-      return res
-        .status(404)
-        .json({ status: 'error', message: 'User not found' });
+      const err = new Error('User not found');
+      err.status = 404;
+      return next(err);
     }
     res.json({ status: 'success', data: user });
   } catch (err) {
     console.error('❌ Error in getMe:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    err.status = 500;
+    return next(err);
   }
 };
 
 // PATCH /auth/me
-const updateMe = async (req, res) => {
+const updateMe = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.user.id);
     if (!user) {
-      return res
-        .status(404)
-        .json({ status: 'error', message: 'User not found' });
+      const err = new Error('User not found');
+      err.status = 404;
+      return next(err);
     }
 
     const { email, password, phone_number, workplace, job_title } = req.body;
@@ -149,35 +148,37 @@ const updateMe = async (req, res) => {
     res.json({ status: 'success', message: 'Profile updated successfully' });
   } catch (err) {
     console.error('❌ Error in updateMe:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    err.status = 500;
+    return next(err);
   }
 };
 
 // DELETE /auth/me
-const deleteMe = async (req, res) => {
+const deleteMe = async (req, res, next) => {
   try {
     const deleted = await User.destroy({ where: { id: req.user.id } });
     if (!deleted) {
-      return res
-        .status(404)
-        .json({ status: 'error', message: 'User not found' });
+      const err = new Error('User not found');
+      err.status = 404;
+      return next(err);
     }
     res.json({ status: 'success', message: 'User deleted successfully' });
   } catch (err) {
     console.error('❌ Error in deleteMe:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    err.status = 500;
+    return next(err);
   }
 };
 
 // POST /auth/forgot-password
-const forgotPassword = async (req, res) => {
+const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res
-        .status(404)
-        .json({ status: 'error', message: 'No user with that email' });
+      const err = new Error('No user with that email');
+      err.status = 404;
+      return next(err);
     }
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, {
@@ -187,29 +188,30 @@ const forgotPassword = async (req, res) => {
     res.json({ status: 'success', message: 'Password reset email sent' });
   } catch (err) {
     console.error('❌ Error in forgotPassword:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    err.status = 500;
+    return next(err);
   }
 };
 
 // POST /auth/reset-password
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res, next) => {
   const { token, newPassword } = req.body;
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findByPk(decoded.id);
     if (!user) {
-      return res
-        .status(404)
-        .json({ status: 'error', message: 'User not found' });
+      const err = new Error('User not found');
+      err.status = 404;
+      return next(err);
     }
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
     res.json({ status: 'success', message: 'Password has been reset' });
   } catch (err) {
     console.error('❌ Error in resetPassword:', err);
-    res
-      .status(400)
-      .json({ status: 'error', message: 'Invalid or expired token' });
+    err.status = 400;
+    err.message = 'Invalid or expired token';
+    return next(err);
   }
 };
 
@@ -219,18 +221,19 @@ const logoutUser = (req, res) => {
 };
 
 // GET /auth/users
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.findAll({ attributes: { exclude: ['password'] } });
     res.json({ status: 'success', data: users });
   } catch (err) {
     console.error('❌ Error in getAllUsers:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    err.status = 500;
+    return next(err);
   }
 };
 
 // POST /auth/devices/:deviceId/token
-const getDeviceToken = async (req, res) => {
+const getDeviceToken = async (req, res, next) => {
   const { deviceId } = req.params; // e.g. "SENTINEL-001"
   try {
     let device = await Device.findOne({ where: { device_id: deviceId } });
@@ -241,7 +244,8 @@ const getDeviceToken = async (req, res) => {
     res.json({ status: 'success', token });
   } catch (err) {
     console.error('❌ Error in getDeviceToken:', err);
-    res.status(500).json({ status: 'error', message: err.message });
+    err.status = 500;
+    return next(err);
   }
 };
 
