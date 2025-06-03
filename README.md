@@ -1,7 +1,5 @@
 # backend
 
-Backend
-
 ![CI](https://github.com/chas-challenge-code-6/backend/actions/workflows/test.yml/badge.svg)
 
 # 🚀 IoT Sensor Backend API
@@ -10,6 +8,8 @@ A modern backend API built with **Express.js** and **Sequelize**, designed for c
 
 🚀 **Live API:** [https://backend-belz.onrender.com](https://backend-belz.onrender.com)  
 📘 **Swagger Docs:** [https://backend-belz.onrender.com/api-docs](https://backend-belz.onrender.com/api-docs)
+📄 **Swagger JSON:**  
+[https://backend-belz.onrender.com/swagger.json](https://backend-belz.onrender.com/swagger.json)
 
 ---
 
@@ -182,20 +182,21 @@ Returns:
 
 > ⚠️ `.env` file is public in this repo **intentionally** for educational purposes.  
 > ⚠️ Production apps should **never expose secrets or config like this**.
-
-> Uses **Neon** as the cloud database (PostgreSQL-compatible).
+> Uses **Render PostgreSQL** as the cloud database.
 
 ---
 
 ## 🧪 Test it
 
-Visit:
+You can explore and test the API using the following tools:
 
-- 🔗 [`/api-docs`](https://backend-belz.onrender.com/api-docs) – Swagger
-- Use [Thunder Client](https://www.thunderclient.com/) or Postman to test requests
+- 🔗 [Swagger UI](https://backend-belz.onrender.com/api-docs) – Interactive API documentation
+- 📄 [Swagger JSON](https://backend-belz.onrender.com/swagger.json) – Raw OpenAPI spec
+- 🧪 Use tools like [Thunder Client](https://www.thunderclient.com/) or Postman to make authenticated requests
+- 🧼 Automated tests are available via Jest
+
+### Run tests locally
 
 ```bash
 npm test
 ```
-
----
