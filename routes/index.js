@@ -1,4 +1,3 @@
-//index.js
 import express from 'express';
 const router = express.Router();
 
@@ -12,6 +11,8 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: API is up and responding
+ *       500:
+ *         description: Internal server error
  */
 router.get('/', (req, res) => {
   res.send('✅ API is running – Express on Render is working!');

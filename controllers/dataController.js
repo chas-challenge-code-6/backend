@@ -2,7 +2,7 @@ import { SensorData } from '../models/index.js';
 import { Op } from 'sequelize';
 
 // POST /api/data
-const createData = async (req, res) => {
+const createData = async (req, res, next) => {
   try {
     const { device_id, sensors, timestamp, userId: bodyUserId } = req.body;
     const userId = req.user?.id ?? req.user?.device_id ?? bodyUserId;
@@ -14,7 +14,9 @@ const createData = async (req, res) => {
         'bodyUserId:',
         bodyUserId
       );
-      return res.status(400).json({ error: 'Missing userId for INSERT' });
+      const err = new Error('Missing userId for INSERT');
+      err.status = 400;
+      return next(err);
     }
 
     const createdAt = timestamp ? new Date(timestamp) : new Date();
@@ -40,12 +42,13 @@ const createData = async (req, res) => {
       .json({ status: 'success', message: 'Data saved successfully', data });
   } catch (err) {
     console.error('Error in createData:', err);
-    res.status(500).json({ error: err.message });
+    err.status = 500;
+    next(err);
   }
 };
 
 // GET /api/data/latest
-const getLatestData = async (req, res) => {
+const getLatestData = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const [results] = await SensorData.sequelize.query(
@@ -67,12 +70,13 @@ const getLatestData = async (req, res) => {
     res.json(results);
   } catch (err) {
     console.error('Error in getLatestData:', err);
-    res.status(500).json({ error: err.message });
+    err.status = 500;
+    next(err);
   }
 };
 
 // GET /api/data/:device_id
-const getDeviceData = async (req, res) => {
+const getDeviceData = async (req, res, next) => {
   try {
     const { device_id } = req.params;
     const userId = req.user.id;
@@ -93,12 +97,13 @@ const getDeviceData = async (req, res) => {
     res.json(data);
   } catch (err) {
     console.error('Error in getDeviceData:', err);
-    res.status(500).json({ error: err.message });
+    err.status = 500;
+    next(err);
   }
 };
 
 // GET /api/alerts
-const getAlerts = async (req, res) => {
+const getAlerts = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const data = await SensorData.findAll({
@@ -144,18 +149,20 @@ const getAlerts = async (req, res) => {
     res.json(alerts.filter(Boolean));
   } catch (err) {
     console.error('Error in getAlerts:', err);
-    res.status(500).json({ error: err.message });
+    err.status = 500;
+    next(err);
   }
 };
 
 // Health check endpoint
-const healthCheck = async (req, res) => {
+const healthCheck = async (req, res, next) => {
   try {
     await SensorData.sequelize.authenticate();
     res.json({ status: 'ok', database: 'connected' });
   } catch (err) {
     console.error('HealthCheck failed:', err);
-    res.status(500).json({ status: 'error', database: 'disconnected' });
+    err.status = 500;
+    next(err);
   }
 };
 
